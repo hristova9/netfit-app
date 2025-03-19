@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  client:
+    build: ./client
+    container_name: client
+    restart: always
+    ports:
+      - "5173:5173"
+    depends_on:
+      # - api-gateway
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+
+
+  user_db:
+    image: postgres:17
+    container_name: user_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${USER_DB_USER}
+      POSTGRES_PASSWORD: ${USER_DB_PASS}
+      POSTGRES_DB: ${USER_DB_NAME}
+    ports:
+      - "5433:5432"
+    volumes:
+    - user_db_data:/var/lib/postgresql/data
+
+  # post_db:
+  #   image: postgres:17
+  #   container_name: post_db
+  #   restart: always
+  #   environment:
+  #     POSTGRES_USER: ${POST_DB_USER}
+  #     POSTGRES_PASSWORD: ${POST_DB_PASS}
+  #     POSTGRES_DB: ${POST_DB_NAME}
+  #   ports:
+  #     - "5434:5432"
+
+  user-service:
+    build: ./users-service
+    container_name: user-service
+    restart: always
+    depends_on:
+      - user_db
+      - rabbitmq
+    ports:
+      - "3001:3001"
+    env_file:
+      - .env
+
+  # post-service:
+  #   build: ./post-service
+  #   container_name: post-service
+  #   restart: always
+  #   depends_on:
+  #     - post_db
+  #     - rabbitmq
+  #   ports:
+  #     - "3002:3002"
+  #   env_file:
+  #     - .env
+
+  api-gateway:
+    # build: ./api-gateway
+    # container_name: api-gateway
+    # restart: always
+    # depends_on:
+    #   # - user-service
+    #   - rabbitmq
+    #   # - post-service
+    # ports:
+    #   - "3000:3000"
+
+volumes:
+  user_db_data:  # Volume for user_db data persistence
+    # driver: local
