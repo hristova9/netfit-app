@@ -36,10 +36,14 @@ userRouter.get("/:id", async (ctx) => {
   ctx.body = user;
 });
 
-userRouter.post("/", validator(createUserValidationSchema), async (ctx) => {
+userRouter.post("/", async (ctx) => {
   try {
     const body = ctx.request.body as IUserRegister;
+    console.log(body);
+    
     const newUser = await createUser(body);
+    console.log(newUser);
+    
 
     ctx.status = 201;
     ctx.body = {
@@ -47,12 +51,13 @@ userRouter.post("/", validator(createUserValidationSchema), async (ctx) => {
       firstName: newUser.firstName,
       lastName: newUser.lastName,
       email: newUser.email,
-      isAdmin: newUser.isAdmin,
     };
   } catch (err) {
     if (err instanceof Error) {
       ctx.throw(400, err.message); 
+      console.error("Error occurred:", err);
     } else {
+      console.error("Error:", err);
       ctx.throw(500, "Unknown error");
     }
   }

@@ -11,8 +11,8 @@ export const userValidationSchema: JSONSchemaType<IUser> = {
     password: {
       type: "string",
       nullable: true,
-      minLength: 6,
-      pattern: "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$",
+      minLength: 8,
+      pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$",
     },
     age: { type: "integer", nullable: true },
     isAdmin: { type: "boolean" },
@@ -29,10 +29,14 @@ export const createUserValidationSchema: JSONSchemaType<IUserRegister> = {
     email: { type: "string", format: "email" },
     password: {
       type: "string",
-      minLength: 6,
-      pattern: "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$",
+      minLength: 8,
+      pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$",
     },
-    isAdmin: { type: "boolean" },
+    isAdmin: {
+      type: "boolean",
+      nullable: true,
+      default: false,
+    },
   },
   additionalProperties: false,
   required: ["firstName", "lastName", "email", "password"],

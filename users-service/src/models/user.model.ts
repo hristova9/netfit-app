@@ -13,7 +13,7 @@ export interface IUserRegister {
     lastName: string;
     email: string;
     password: string;
-    isAdmin: boolean;
+    isAdmin?: boolean;
 }
 
 export interface IUserLogin {

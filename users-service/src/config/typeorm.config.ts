@@ -10,7 +10,7 @@ export const UserDataSource = new DataSource({
   password: process.env.USER_DB_PASSWORD || "password",
   database: process.env.USER_DB_NAME || "user_db",
   synchronize: true,
-  logging: true,
+  logging: false,
   entities: [User],
 });
 
