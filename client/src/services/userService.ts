@@ -3,8 +3,8 @@ import { apiFetch } from "../utils/apiFetch";
 const API_URL = "http://localhost:3001/users";
 
 export const createUser = async (
-  first_name: string,
-  last_name: string,
+  firstName: string,
+  lastName: string,
   email: string,
   password: string
 ) => {
@@ -14,7 +14,7 @@ export const createUser = async (
       headers: {
         "Content-Type": "aplication/json",
       },
-      body: JSON.stringify({ first_name, last_name, email, password }),
+      body: JSON.stringify({ firstName, lastName, email, password }),
     });
 
     if (!response.ok) {

@@ -1,26 +1,26 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import { createUser } from '../services/userService';
 import { isValidEmail, passwordValidation, arePasswordsMatching } from '../utils/validation';
 import { UserRegistration } from '../models/User.model';
+import { createUser, getAllUsers } from '../services/userService';
 
 export const useUserRegistration = () => {
-    // const [users, setUsers] = useState<UserRegistration[]>([]);
+    const [users, setUsers] = useState<UserRegistration[]>([]);
     const [error, setError] = useState<string>('');
     const navigate = useNavigate();
   
-    // useEffect(() => {
-    //   const fetchUsers = async () => {
-    //     try {
-    //       const usersData = await getAllUsers();
-    //       setUsers(usersData);
-    //     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    //     } catch (error) {
-    //       setError('Failed to fetch users.');
-    //     }
-    //   };
-    //   fetchUsers();
-    // }, []);
+    useEffect(() => {
+      const fetchUsers = async () => {
+        try {
+          const usersData = await getAllUsers();
+          setUsers(usersData);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {
+          setError('Failed to fetch users.');
+        }
+      };
+      fetchUsers();
+    }, []);
   
     const registerUser = async (formData: UserRegistration) => {
       const { firstName, lastName, email, password, repassword } = formData;
@@ -46,11 +46,11 @@ export const useUserRegistration = () => {
         return false;
       }
   
-    //   const isRegistered = users.some((u) => u.email === trimmedEmail);
+      const isRegistered = users.some((u) => u.email === trimmedEmail);
   
-    //   if (!isRegistered) {
+      if (!isRegistered) {
         try {
-        //   await createUser(trimmedFirstName, trimmedLastName, trimmedEmail, password);
+          await createUser(trimmedFirstName, trimmedLastName, trimmedEmail, password);
           setError('');
           navigate('/login');
           console.log(`${trimmedFirstName} ${trimmedLastName} created`);
@@ -62,9 +62,9 @@ export const useUserRegistration = () => {
           setError('Failed to create user.');
           return false;
         }
-    //   } else {
-    //     setError('User is already registered!');
-    //   }
+      } else {
+        setError('User is already registered!');
+      }
     };
   
     return { registerUser, error };
