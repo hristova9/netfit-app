@@ -1,0 +1,28 @@
+.input-field{
+    display: flex;
+    flex-flow: column wrap;
+    width: 80%;
+}
+
+label {
+    margin-top: 10px;
+    font-size: large;
+    font-weight: bold;
+  }
+  
+  input {
+    height: 40px; 
+    padding: 0 10px;
+    border: none; 
+    border-radius: 15px; 
+    background-color: #f0f0f0;
+    font-size: 16px; 
+    width: 100%;
+  }
+  
+  
+  input:focus {
+    outline: none;
+    background-color: #e0e0e0;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  }

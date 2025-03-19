@@ -1,0 +1,10 @@
+.post-list-container{
+    width: 100%;
+}
+
+.post-list{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap:20px;
+}

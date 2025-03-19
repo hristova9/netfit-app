@@ -1,0 +1,25 @@
+.main-layout {
+  display: flex;
+}
+
+.content-area {
+  margin-left: 250px;
+  padding: 40px;
+  width: 100%;
+}
+
+h1 {
+  font-size: 2rem;
+}
+
+p {
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .content-area {
+    margin-left: 200px;
+  padding: 20px;
+
+  }
+}
