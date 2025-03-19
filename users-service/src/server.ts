@@ -7,11 +7,19 @@ import { UserDataSource } from "./config/typeorm.config";
 import { connectRabbitMQ } from "./services/rabbitmq";
 import bcryptjs from "bcryptjs";
 import { userRouter } from "./routes/userRoutes";
+import cors from "@koa/cors";
 
 const app = new Koa();
 const router = new Router();
 
 const PORT = 3001;
+
+app.use(
+  cors({
+    origin: "http://localhost:5174",
+    credentials: true,
+  })
+);
 
 app.use(bodyParser());
 app.use(router.routes()).use(router.allowedMethods());
