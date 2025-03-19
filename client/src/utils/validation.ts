@@ -4,7 +4,8 @@ export const isValidEmail = (email: string): boolean => {
 };
 
 export const passwordValidation = (password: string): boolean => {
-  return password.length >= 8;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+  return passwordRegex.test(password);
 };
 
 export const arePasswordsMatching = (

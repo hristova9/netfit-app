@@ -12,7 +12,7 @@ export const createUser = async (
     const response = await fetch(API_URL, {
       method: "POST",
       headers: {
-        "Content-Type": "aplication/json",
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ firstName, lastName, email, password }),
     });
