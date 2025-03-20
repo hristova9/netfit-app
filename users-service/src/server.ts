@@ -1,23 +1,23 @@
 import Koa from "koa";
 import Router from "koa-router";
 import bodyParser from "koa-bodyparser";
-// import amqp from "amqplib"; // RabbitMQ library
 import { User } from "./entities/user.entity";
 import { UserDataSource } from "./config/typeorm.config";
-import { connectRabbitMQ } from "./services/rabbitmq";
+// import { connectRabbitMQ } from "./services/rabbitmq";
 import bcryptjs from "bcryptjs";
 import { userRouter } from "./routes/userRoutes";
 import cors from "@koa/cors";
+import authRouter from "./routes/authRoutes";
 
 const app = new Koa();
 const router = new Router();
 
-const PORT = 3001;
+const PORT = process.env.USER_PORT || 3001;
 
 app.use(
   cors({
     origin: "http://localhost:5174",
-    credentials: true,
+    credentials: true
   })
 );
 
@@ -25,6 +25,11 @@ app.use(bodyParser());
 app.use(router.routes()).use(router.allowedMethods());
 
 app.use(userRouter.routes()).use(userRouter.allowedMethods());
+app.use(authRouter.routes()).use(authRouter.allowedMethods());
+
+app.use(async (ctx) => {
+  ctx.body = 'Hello World';
+});
 
 const createAdminUser = async () => {
   const userRepository = UserDataSource.getRepository(User);
@@ -45,15 +50,20 @@ const createAdminUser = async () => {
 };
 
 const startServer = async () => {
-  await UserDataSource.initialize();
-  console.log("Connected to User DB");
+  
+  try {
+    await UserDataSource.initialize()
+    .then(() => console.log("✅ User Service Database Connected"))
+    .catch((err) => console.error("❌ Error connecting to User DB", err));
 
-  await createAdminUser();
+    await createAdminUser();
 
-  await connectRabbitMQ();
-  console.log("Connected to RabbitMQ");
+    // await connectRabbitMQ();
 
-  app.listen(PORT, () => console.log(`User Service running on port ${PORT}`));
+    app.listen(PORT, () => console.log(`User Service running on port ${PORT}`));
+  } catch (err) {
+    console.error("❌ Error during server startup", err);
+  }
 };
 
 startServer();

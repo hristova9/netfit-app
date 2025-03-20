@@ -13,12 +13,17 @@ export interface IUserRegister {
     lastName: string;
     email: string;
     password: string;
-    isAdmin: boolean;
+    isAdmin?: boolean;
 }
 
 export interface IUserLogin {
-    email: string,
-    password: string
+    email: string;
+    password: string;
+}
+
+export interface IJwtUser extends IUser {
+    iat: number;
+    exp: number;
 }
 
 export interface UserRepository {

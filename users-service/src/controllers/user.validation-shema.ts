@@ -1,5 +1,5 @@
 import { JSONSchemaType } from "ajv";
-import { IUser, IUserRegister } from "../models/user.model";
+import { IUser, IUserLogin, IUserRegister } from "../models/user.model";
 
 export const userValidationSchema: JSONSchemaType<IUser> = {
   type: "object",
@@ -11,8 +11,8 @@ export const userValidationSchema: JSONSchemaType<IUser> = {
     password: {
       type: "string",
       nullable: true,
-      minLength: 6,
-      pattern: "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$",
+      minLength: 8,
+      pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*d)[A-Za-zd]{8,}$",
     },
     age: { type: "integer", nullable: true },
     isAdmin: { type: "boolean" },
@@ -29,11 +29,25 @@ export const createUserValidationSchema: JSONSchemaType<IUserRegister> = {
     email: { type: "string", format: "email" },
     password: {
       type: "string",
-      minLength: 6,
-      pattern: "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$",
+      minLength: 8,
+      pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d]{8,}$",
     },
-    isAdmin: { type: "boolean" },
+    isAdmin: { type: "boolean", nullable: true, default: false },
   },
   additionalProperties: false,
   required: ["firstName", "lastName", "email", "password"],
+};
+
+export const loginUserValidationSchema: JSONSchemaType<IUserLogin> = {
+  type: "object",
+  properties: {
+    email: { type: "string", format: "email" },
+    password: {
+      type: "string",
+      minLength: 8,
+      pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d]{8,}$",
+    },
+  },
+  additionalProperties: false,
+  required: ["email", "password"],
 };

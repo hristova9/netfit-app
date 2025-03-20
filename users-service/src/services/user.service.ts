@@ -3,19 +3,20 @@ import { IUser, IUserRegister } from "../models/user.model";
 import userRepository from "../repositories/user.repository";
 import _ from "lodash";
 
-export const getUsers = async (email?: string) => {
-  if (email) {
-    const user = await userRepository.findOne({ where: { email } });
-    if (!user) {
-      throw new Error("User not found");
-    }
-    return user;
+export const getAllUsers = async (): Promise<IUser[]> => {
+  try {
+    return await userRepository.find();
+  } catch (error) {
+    throw new Error("Database error: Unable to retrieve users.");
   }
-  return userRepository.find();
 };
 
 export const getUserById = async (id: string) => {
   return userRepository.findOne({ where: { id } });
+};
+
+export const getUserByEmail = async (email?: string) => {
+  return userRepository.findOne({ where: { email } });
 };
 
 export const createUser = async (data: IUserRegister): Promise<IUser> => {
@@ -24,6 +25,7 @@ export const createUser = async (data: IUserRegister): Promise<IUser> => {
   }
 
   const hashedPassword = await bcryptjs.hash(data.password, 10);
+  console.log("Hashed password during registration:", hashedPassword);
   const user = userRepository.create({ ...data, password: hashedPassword });
 
   await userRepository.save(user);
