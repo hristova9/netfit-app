@@ -1,6 +1,9 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
 import { User } from "../entities/user.entity";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const UserDataSource = new DataSource({
   type: "postgres",
@@ -13,7 +16,3 @@ export const UserDataSource = new DataSource({
   logging: false,
   entities: [User],
 });
-
-UserDataSource.initialize()
-  .then(() => console.log("✅ User Service Database Connected"))
-  .catch((err) => console.error("❌ Error connecting to User DB", err));

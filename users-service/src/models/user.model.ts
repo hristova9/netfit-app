@@ -17,8 +17,13 @@ export interface IUserRegister {
 }
 
 export interface IUserLogin {
-    email: string,
-    password: string
+    email: string;
+    password: string;
+}
+
+export interface IJwtUser extends IUser {
+    iat: number;
+    exp: number;
 }
 
 export interface UserRepository {
