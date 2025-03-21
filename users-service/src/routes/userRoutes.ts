@@ -1,9 +1,7 @@
 import Router from "koa-router";
 import {
-  createUser,
   deleteUserById,
   getAllUsers,
-  getUserByEmail,
   getUserById,
   updateUser,
 } from "../services/user.service";
@@ -13,6 +11,7 @@ import {
   userValidationSchema,
 } from "../controllers/user.validation-shema";
 import { IUser, IUserRegister } from "../models/user.model";
+import { authMiddleware } from "../middlewares/authMiddleware";
 // import { createUser } from "../repositories/user.repository";
 
 export const userRouter = new Router({
@@ -24,90 +23,80 @@ userRouter.get("/", async (ctx) => {
     const users = await getAllUsers();
     ctx.status = 200;
     ctx.body = users;
-  } catch (err) {
-    if (err instanceof Error) {
-      ctx.throw(404, err.message);
+  } catch (error) {
+    if (error instanceof Error) {
+      ctx.throw(404, error.message);
     } else {
-      ctx.status = 500;
-      ctx.body = {
-        error:
-          "An error occurred while retrieving users. Please try again later.",
-      };
+      ctx.throw(500, "An error occurred while retrieving users. Please try again later.");
     }
   }
 });
 
 userRouter.get("/:id", async (ctx) => {
-  const { id } = ctx.params;
-  const user = await getUserById(id);
-  if (!user) {
-    ctx.throw(404, "User not found");
+  try{
+    const { id } = ctx.params;
+    console.log(id);
+    
+    const user = await getUserById(id);
+    ctx.body = user;
+  }catch (error) {
+    if (error instanceof Error) {
+      ctx.throw(404, error.message);
+    } else {
+      ctx.throw(500, "An error occurred while retrieving user. Please try again later.");
+    }
   }
-  ctx.body = user;
 });
 
-// userRouter.post("/", async (ctx) => {
-//   try {
-//     const body = ctx.request.body as IUserRegister;
-//     const newUser = await createUser(body);
-
-//     ctx.status = 201;
-//     ctx.body = {
-//       id: newUser.id,
-//       firstName: newUser.firstName,
-//       lastName: newUser.lastName,
-//       email: newUser.email,
-//     };
-//   } catch (err) {
-//     console.log("post");
-    
-//     if (err instanceof Error) {
-//       ctx.throw(400, err.message);
-//       console.error("Error occurred:", err);
-//     } else {
-//       console.error("Error:", err);
-//       ctx.throw(500, "Unknown error");
-//     }
-//   }
-// });
-
-userRouter.put("/:id", async (ctx) => {
-  // userRouter.put("/:id", validator(userValidationSchema), async (ctx) => {
+userRouter.put("/:id", authMiddleware, async (ctx) => {
   const { id } = ctx.params;
-  const userId = ctx.state.user?.id;
+  const authenticatedUserId = ctx.state.user?.id;
   const body = ctx.request.body as IUser;
 
-  // if (!userId) {
-  //   ctx.throw(401, "Unauthorized: User not authenticated");
-  // }
+  if (!authenticatedUserId) {
+    ctx.throw(401, "Unauthorized: User not authenticated");
+  }
 
-  // if (id.toString() !== userId.toString()) {
-  //   ctx.throw(403, "Forbidden: You can only update your own account");
-  // }
+  if (id !== authenticatedUserId.toString()) {
+    ctx.throw(403, "Forbidden: You can only update your own account");
+  }
 
   try {
     const updatedUser = await updateUser(id, body as IUser);
     ctx.body = updatedUser;
   } catch (error) {
-    console.error("Update User Error:", error);
-    ctx.throw(400, "Failed to update user");
+    if (error instanceof Error) {
+      ctx.throw(400, error.message);
+    } else {
+      ctx.throw(500, "An error occurred while updating user. Please try again later.");
+    }
+    
   }
 });
 
-userRouter.delete("/:id", async (ctx) => {
+userRouter.delete("/:id", authMiddleware, async (ctx) => {
+  
   try {
     const { id } = ctx.params;
-    // if (ctx.state.user.id !== id) {
-    //   ctx.throw(403, "Forbidden: You can only delete your own account");
-    // }
+    const authenticatedUserId = ctx.state.user?.id;
+
+    console.log("Authenticated User ID:", authenticatedUserId)
+
+  if (!authenticatedUserId) {
+    ctx.throw(401, "Unauthorized: User not authenticated");
+  }
+
+  if (id !== authenticatedUserId.toString()) {
+    ctx.throw(403, "Forbidden: You can only delete your own account");
+  }
 
     await deleteUserById(id);
     ctx.status = 204;
-  } catch (err) {
-    if (err instanceof Error) {
-      ctx.throw(404, err.message);
+  } catch (error) {
+    if (error instanceof Error) {
+      ctx.throw(404, error.message);
     } else {
-      ctx.throw(500, "Unknown error");
+      ctx.throw(500, "An error occurred while deleting user. Please try again later.");
     }
   }
 });

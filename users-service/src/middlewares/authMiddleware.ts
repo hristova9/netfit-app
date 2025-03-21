@@ -1,33 +1,35 @@
-// import jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { Context, Next } from "koa";
-// import { JWT_SECRET } from "../config/config";
-// import { IJwtUser, IUser } from "../models/user.model";
-// import { isTokenBlacklisted } from "../services/blacklist.service";
+import { JWT_SECRET } from "../config/config";
+import { IJwtUser, IUser } from "../models/user.model";
+import { isTokenBlacklisted } from "../services/blacklist.service";
 
-// export const authMiddleware = async (ctx: Context, next: Next) => {
-//   const token = ctx.headers.authorization?.split(" ")[1];
+export const authMiddleware = async (ctx: Context, next: Next) => {
+    const token = ctx.cookies.get("token"); 
 
-//   if (!token) {
-//     ctx.status = 401;
-//     ctx.body = { error: "Access denied. No token provided." };
-//     return;
-//   }
+  if (!token) {
+    ctx.status = 401;
+    ctx.body = { error: "Access denied. No token provided." };
+    return;
+  }
 
-//   if (await isTokenBlacklisted(token)) {
-//     ctx.status = 401;
-//     ctx.body = { error: "Token is invalid or expired" };
-//     return;
-//   }
+  if (await isTokenBlacklisted(token)) {
+    ctx.status = 401;
+    ctx.body = { error: "Token is invalid or expired" };
+    return;
+  }
 
-//   try {
-//     const decoded = jwt.verify(token, JWT_SECRET) as IJwtUser;
-//     ctx.state.user = decoded;
-//     await next();
-//   } catch (error) {
-//     ctx.status = 401;
-//     ctx.body = { error: "Invalid or expired token." };
-//   }
-// };
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    console.log(decoded);
+    
+    ctx.state.user = decoded;
+    await next();
+  } catch (error) {
+    ctx.status = 401;
+    ctx.body = { error: "Invalid or expired token." };
+  }
+};
 
 export const adminMiddleware = async (ctx: Context, next: Next) => {
   if (!ctx.state.user?.isAdmin) {

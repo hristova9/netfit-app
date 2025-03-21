@@ -9,6 +9,16 @@ services:
       - "5672:5672"
       - "15672:15672"
 
+  redis:
+    image: "redis:latest"
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - mynetwork
+
   client:
     build: ./client
     container_name: client
@@ -19,6 +29,8 @@ services:
       # - api-gateway
     environment:
       - CHOKIDAR_USEPOLLING=true
+    networks:
+      - mynetwork
 
 
   user_db:
@@ -33,6 +45,8 @@ services:
       - "5433:5432"
     volumes:
     - user_db_data:/var/lib/postgresql/data
+    networks:
+      - mynetwork
 
   # post_db:
   #   image: postgres:17
@@ -52,10 +66,15 @@ services:
     depends_on:
       - user_db
       - rabbitmq
+      - redis
     ports:
       - "3001:3001"
+    environment:
+      - REDIS_HOST=redis
     env_file:
       - .env
+    networks:
+      - mynetwork
 
   # post-service:
   #   build: ./post-service
@@ -83,3 +102,8 @@ services:
 volumes:
   user_db_data:  # Volume for user_db data persistence
     # driver: local
+  redis_data:
+  
+networks:
+  mynetwork:
+    driver: bridge

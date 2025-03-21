@@ -9,7 +9,10 @@ import {
 import { validator } from "../middlewares/validatorMiddleware";
 import { createUser, getUserByEmail } from "../services/user.service";
 import { checkUserCredentials } from "../services/auth.service";
-import { addToBlacklist, isTokenBlacklisted } from "../services/blacklist.service";
+import {
+  addToBlacklist,
+  isTokenBlacklisted,
+} from "../services/blacklist.service";
 
 const authRouter = new Router({
   prefix: "/auth",
@@ -61,16 +64,20 @@ authRouter.post("/login", validator(loginUserValidationSchema), async (ctx) => {
     }
 
     const user = await getUserByEmail(body.email);
+    const token = jwt.sign(
+      { id: user.id, email: user.email, isAdmin: user.isAdmin },
+      JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+    ctx.cookies.set("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+      maxAge: 3600000,
+    });
 
-    if (user) {
-      const token = jwt.sign(
-        { id: user.id, email: user.email, isAdmin: user.isAdmin },
-        JWT_SECRET,
-        { expiresIn: "1h" }
-      );
-      ctx.status = 200;
-      ctx.body = { token };
-    }
+    ctx.status = 200;
+    ctx.body = { message: "Login successful" };
   } catch (err) {
     if (err instanceof Error) {
       ctx.throw(400, err.message);
@@ -86,8 +93,7 @@ authRouter.post("/login", validator(loginUserValidationSchema), async (ctx) => {
 });
 
 authRouter.post("/logout", async (ctx) => {
-  const token =
-    ctx.cookies.get("token") || ctx.headers.authorization?.split(" ")[1];
+  const token = ctx.cookies.get("token");
 
   if (!token) {
     ctx.status = 400;

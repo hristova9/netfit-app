@@ -1,6 +1,6 @@
 import { apiFetch } from "../utils/apiFetch";
 
-const API_URL = "http://localhost:3001/users";
+const API_URL = "http://localhost:3001/";
 
 export const createUser = async (
   firstName: string,
@@ -9,7 +9,7 @@ export const createUser = async (
   password: string
 ) => {
   try {
-    const response = await fetch(API_URL, {
+    const response = await fetch(API_URL + 'auth/register', {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
