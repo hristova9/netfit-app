@@ -1,8 +1,6 @@
 import { Repository } from "typeorm";
 import { User } from "../entities/user.entity";
 import { UserDataSource } from "../config/typeorm.config";
-import bcrypt from "bcryptjs";
-import { IUser, IUserRegister } from "../models/user.model";
 
 const userRepository: Repository<User> = UserDataSource.getRepository(User);
 

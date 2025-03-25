@@ -1,11 +1,11 @@
 import jwt from "jsonwebtoken";
 import { Context, Next } from "koa";
-import { JWT_SECRET } from "../config/config";
-import { IJwtUser, IUser } from "../models/user.model";
+import { config } from "../config/config";
 import { isTokenBlacklisted } from "../services/blacklist.service";
+import { error } from "console";
 
 export const authMiddleware = async (ctx: Context, next: Next) => {
-    const token = ctx.cookies.get("token"); 
+  const token = ctx.cookies.get("token");
 
   if (!token) {
     ctx.status = 401;
@@ -20,14 +20,17 @@ export const authMiddleware = async (ctx: Context, next: Next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    console.log(decoded);
-    
+    const decoded = jwt.verify(token, config.jwt);
     ctx.state.user = decoded;
+    ctx.status = 200;
+
     await next();
   } catch (error) {
     ctx.status = 401;
-    ctx.body = { error: "Invalid or expired token." };
+    ctx.body = {
+      error: "Authentication failed",
+      message: error instanceof Error ? error.message : "Invalid token",
+    };
   }
 };
 

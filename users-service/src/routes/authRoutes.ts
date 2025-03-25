@@ -1,6 +1,6 @@
 import Router from "koa-router";
 import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "../config/config";
+import { config } from "../config/config";
 import { IUserLogin, IUserRegister } from "../models/user.model";
 import {
   createUserValidationSchema,
@@ -66,18 +66,19 @@ authRouter.post("/login", validator(loginUserValidationSchema), async (ctx) => {
     const user = await getUserByEmail(body.email);
     const token = jwt.sign(
       { id: user.id, email: user.email, isAdmin: user.isAdmin },
-      JWT_SECRET,
+      config.jwt,
       { expiresIn: "1h" }
     );
+
     ctx.cookies.set("token", token, {
       httpOnly: true,
-      secure: false,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 3600000,
+        maxAge: 3600000,
     });
 
     ctx.status = 200;
-    ctx.body = { message: "Login successful" };
+    ctx.body = { message: "Login successful", token: token };
   } catch (err) {
     if (err instanceof Error) {
       ctx.throw(400, err.message);
@@ -94,7 +95,6 @@ authRouter.post("/login", validator(loginUserValidationSchema), async (ctx) => {
 
 authRouter.post("/logout", async (ctx) => {
   const token = ctx.cookies.get("token");
-
   if (!token) {
     ctx.status = 400;
     ctx.body = { error: "No token provided" };
@@ -103,7 +103,6 @@ authRouter.post("/logout", async (ctx) => {
 
   try {
     const isBlacklisted = await isTokenBlacklisted(token);
-
     if (isBlacklisted) {
       ctx.status = 400;
       ctx.body = { error: "Token is already logged out (blacklisted)" };
@@ -116,7 +115,12 @@ authRouter.post("/logout", async (ctx) => {
       await addToBlacklist(token, expiresIn);
     }
 
-    ctx.cookies.set("token", "", { expires: new Date(0) });
+    ctx.cookies.set("token", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      expires: new Date(0),
+    });
     ctx.status = 200;
     ctx.body = { message: "Logged out successfully" };
   } catch (error) {
@@ -125,11 +129,22 @@ authRouter.post("/logout", async (ctx) => {
   }
 });
 
-/**
- * Protected Route - Example (Only Authenticated Users)
- */
-// authRouter.get("/profile", authMiddleware, async (ctx) => {
-//   ctx.body = { message: "User profile", user: ctx.state.user };
+// authRouter.get("/protected-route", async (ctx) => {
+//   const token = ctx.cookies.get("token");
+//   try {
+//     if (!token || (await isTokenBlacklisted(token))) {
+//       ctx.status = 200;
+//       ctx.body = { authenticated: false };
+//       return;
+//     }
+//     const decoded = jwt.verify(token, config.jwt);
+//     ctx.state.user = decoded;
+//     ctx.status = 200;
+//     ctx.body = { authenticated: true };
+//   } catch (error) {
+//     ctx.status = 400;
+//     ctx.body = { authenticated: false };
+//   }
 // });
 
 export default authRouter;

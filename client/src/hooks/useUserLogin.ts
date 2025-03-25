@@ -1,65 +1,53 @@
 import { useState } from "react";
-// import { getAllUsers } from "../services/userService";
 import { UserLogin } from "../models/User.model";
-// import { handleError } from "../utils/errorHandler";
-// import { FormDataSignIn } from "../../models/FormData";
+import { useNavigate } from "react-router-dom";
+import { isValidEmail } from "../utils/validation";
+import { loginUserServie } from "../services/userService";
+// import Cookies from "js-cookie";
 
 export const useUserLogin = () => {
-  const [formData, setFormData] = useState<UserLogin>({
-    email: "",
-    password: "",
-  });
-  // const [users, setUsers] = useState<User[]>([]);
   const [error, setError] = useState<string>("");
+  const navigate = useNavigate();
 
-  // Fetch users
-//   useEffect(() => {
-//     const fetchUsers = async () => {
-//       try {
-//         const usersData = await getAllUsers();
-//         setUsers(usersData);
-//       } catch (error) {
-//         handleError(error, setError);
-//       }
-//     };
-//     fetchUsers();
-//   }, []);
-
-  // Handle input changes
-  const handleChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = ev.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  // Handle form submission
-  const handleSubmit = (ev: React.FormEvent<HTMLElement>) => {
-    ev.preventDefault();
+  const loginUser = async (formData: UserLogin) => {
     const { email, password } = formData;
+    const trimmedEmail = email.trim();
 
-    if (!email || !password) {
-      setError("Both fields are required!");
-      return;
+    if (!trimmedEmail || !password) {
+      setError("All fields are required!");
+      return false;
     }
 
-    return formData;
-    // const user = users.find((u) => u.email === email);
+    if (!isValidEmail(trimmedEmail)) {
+      setError("Email is not valid!");
+      return false;
+    }
 
-    // if (user && user.password === password) {
-    //   setError("");
-    //   return user; // Return the found user for further processing
-    // } else {
-    //   setError("Wrong email or password!");
-    //   return null;
-    // }
+    try {
+      const data = await loginUserServie(trimmedEmail, password);
+      
+      if (data.token) {
+        setError("");
+        navigate("/");
+      } else {
+        setError("Token not returned in login response.");
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      if (error instanceof Error) {
+        setError("Error: " + error.message);
+      } else {
+        setError("Unknown error occured!");
+      }
+
+      return false;
+    }
   };
 
   return {
-    formData,
+    loginUser,
     error,
-    handleChange,
-    handleSubmit,
   };
 };

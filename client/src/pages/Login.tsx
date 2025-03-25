@@ -2,20 +2,29 @@ import React from "react";
 import Input from "../components/Input/Input";
 import Button from "../components/Button/Button";
 import AuthLayout from "../layouts/AuthLayout";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
+// import { useUserLogin } from "../hooks/useUserLogin";
+import { useFormFields } from "../hooks/useFormFields";
 import { useUserLogin } from "../hooks/useUserLogin";
+import { UserLogin } from "../models/User.model";
 
 const Login: React.FC = () => {
-  const navigate = useNavigate();
-  const { formData, error, handleChange, handleSubmit } = useUserLogin();
-
-  const onSubmit = (ev: React.FormEvent<HTMLElement>) => {
-    const user = handleSubmit(ev);
-    if (user) {
-      console.log(`Hello, ${user.email}`);
-      navigate("/");
-    }
-  };
+  const { formData, handleChange, setFormData } = useFormFields<UserLogin>({
+      email: "",
+      password: ""
+    });
+    const { loginUser, error } = useUserLogin();
+  
+    const handleSubmit = async (ev: React.FormEvent<HTMLElement>) => {
+      ev.preventDefault();
+      const success = await loginUser(formData);
+      if (success) {
+        setFormData({
+          email: '',
+          password: '',
+        });
+      }
+    };
 
   return (
     <AuthLayout
@@ -23,7 +32,7 @@ const Login: React.FC = () => {
       switchText="Don't have a profile? Register here!"
       switchPath="/register"
     >
-      <form onSubmit={onSubmit} className="auth-form">
+      <form onSubmit={handleSubmit} className="auth-form">
         <Input
           label="Email"
           type="email"

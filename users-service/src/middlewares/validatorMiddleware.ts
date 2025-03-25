@@ -10,11 +10,7 @@ export const validator = (schema: JSONSchemaType<IUser | IUserRegister | IUserLo
   const validate: ValidateFunction = ajv.compile(schema);
   const valid = validate(ctx.request.body);
   if (!valid) {
-    console.error("Validation errors:", validate.errors);
-      
-      ctx.status = 400;
-      ctx.body = { error: "Validation failed", details: validate.errors };
-      return;
+    ctx.throw(400, { message: validate.errors });
   }
   
   await next();

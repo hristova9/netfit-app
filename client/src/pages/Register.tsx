@@ -4,10 +4,11 @@ import Input from "../components/Input/Input";
 import Button from "../components/Button/Button";
 import { useFormFields } from "../hooks/useFormFields";
 import { useUserRegistration } from "../hooks/useUserRegister";
+import { UserRegistration } from "../models/User.model";
 
 const Register: React.FC = () => {
 
-  const { formData, handleChange, setFormData } = useFormFields({
+  const { formData, handleChange, setFormData } = useFormFields<UserRegistration>({
     firstName: "",
     lastName: "",
     email: "",

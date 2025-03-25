@@ -1,3 +1,9 @@
-export const isAuthenticated = (): boolean => {
-  return !!localStorage.getItem("token");
-};
+// import { useAuthStatus } from "../hooks/useAuthStatus";
+
+// export const isAuthenticated = async (): boolean => {
+//   const {authStatus} = await useAuthStatus();
+//   if (authStatus) {
+//     return true;
+//   }
+//   return false;
+// };

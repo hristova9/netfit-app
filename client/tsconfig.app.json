@@ -22,5 +22,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src"]
+  "include": ["src", "../../../project-demo/files/authContext.tsx", "../../../project-demo/files/ProtectedRoute", "../../../project-demo/files/PublicRoute"]
 }

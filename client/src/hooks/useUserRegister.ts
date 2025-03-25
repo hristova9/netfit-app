@@ -9,26 +9,8 @@ import { UserRegistration } from "../models/User.model";
 import { createUser } from "../services/userService";
 
 export const useUserRegistration = () => {
-  // const [users, setUsers] = useState<UserRegistration[]>([]);
   const [error, setError] = useState<string>("");
   const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   const fetchUsers = async () => {
-  //     try {
-  //       const usersData = await getAllUsers();
-  //       setUsers(usersData);
-  //       // console.log(users);
-
-  //     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  //     } catch (error) {
-  //       console.log("Failed to fetch users.");
-
-  //       throw new Error('Failed to fetch users.');
-  //     }
-  //   };
-  //   fetchUsers();
-  // }, []);
 
   const registerUser = async (formData: UserRegistration) => {
     const { firstName, lastName, email, password, repassword } = formData;
@@ -62,9 +44,6 @@ export const useUserRegistration = () => {
       return false;
     }
 
-    // const isRegistered = users.some((u) => u.email === trimmedEmail);
-
-    // if (!isRegistered) {
     try {
       await createUser(
         trimmedFirstName,
@@ -77,14 +56,14 @@ export const useUserRegistration = () => {
       console.log(`${trimmedFirstName} ${trimmedLastName} created`);
       return true;
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      setError("Failed to create user.");
+      if(error instanceof Error){
+        setError("Failed to login user.");
+      } else(
+        setError("Unknown error occured!")
+      )
       return false;
     }
-    // } else {
-    //   setError('User is already registered!');
-    // }
   };
 
   return { registerUser, error };
