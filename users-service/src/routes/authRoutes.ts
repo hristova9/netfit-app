@@ -59,7 +59,7 @@ authRouter.post("/login", validator(loginUserValidationSchema), async (ctx) => {
 
     if (!isValidUser) {
       ctx.status = 401;
-      ctx.body = { error: "Invalid email or password." };
+      ctx.body = { message: "Invalid email or password." };
       return;
     }
 
@@ -110,8 +110,9 @@ authRouter.post("/logout", async (ctx) => {
     }
     const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
     const expiresIn = decoded.exp - Math.floor(Date.now() / 1000);
-
+    
     if (expiresIn > 0) {
+      console.log("Invalidating token:", token);
       await addToBlacklist(token, expiresIn);
     }
 

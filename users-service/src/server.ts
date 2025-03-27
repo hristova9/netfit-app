@@ -17,7 +17,7 @@ const PORT = config.user_port;
 app.use(
   cors(
     {
-    origin: "http://localhost:5173",
+    origin: "http://localhost:3000",
     credentials: true
   }
 )
@@ -28,10 +28,6 @@ app.use(router.routes()).use(router.allowedMethods());
 
 app.use(userRouter.routes()).use(userRouter.allowedMethods());
 app.use(authRouter.routes()).use(authRouter.allowedMethods());
-
-// app.use(async (ctx) => {
-//   ctx.body = 'Hello World';
-// });
 
 const startServer = async () => {
   
@@ -44,7 +40,7 @@ const startServer = async () => {
 
     // await connectRabbitMQ();
 
-    app.listen(PORT, () => console.log(`User Service running on port ${PORT}`));
+    app.listen(PORT, "0.0.0.0", () => console.log(`User Service running on port ${PORT}`));
   } catch (err) {
     console.error("❌ Error during server startup", err);
   }

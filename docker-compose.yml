@@ -93,16 +93,26 @@ services:
   #   env_file:
   #     - .env
 
-  # api-gateway:
-    # build: ./api-gateway
-    # container_name: api-gateway
-    # restart: always
-    # depends_on:
-    #   # - user-service
-    #   - rabbitmq
-    #   # - post-service
-    # ports:
-    #   - "3000:3000"
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    restart: always
+    depends_on:
+      - user-service
+      - rabbitmq
+    ports:
+      - "3000:3000"
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      USER_DB_HOST: ${USER_DB_HOST}
+      USER_DB_PORT: ${USER_DB_PORT}
+      USER_DB_USER: ${USER_DB_USER}
+      USER_DB_PASS: ${USER_DB_PASS}
+      USER_DB_NAME: ${USER_DB_NAME}
+      RABBITMQ_URL: ${RABBITMQ_URL}
+      API_GATEWAY_PORT: ${API_GATEWAY_PORT}
+    networks:
+      - mynetwork
 
 volumes:
   user_db_data:  # Volume for user_db data persistence

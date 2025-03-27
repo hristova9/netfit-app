@@ -1,6 +1,6 @@
 import { apiFetch } from "../utils/apiFetch";
 
-const API_URL = "http://localhost:3001/";
+const API_URL = "http://localhost:3000/";
 
 export const createUser = async (
   firstName: string,
@@ -40,11 +40,22 @@ export const loginUserServie = async (email: string, password: string) => {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to login!");
-    }
-    const result = await response.json();
-    if (result.token) {
+      let errorMessage = "Failed to login!";
 
+      try {
+        const errorData = await response.json();
+        console.error("Error response from backend:", errorData.error);
+        errorMessage = errorData.error || errorMessage;
+      } catch (err) {
+        console.error("Failed to parse error response:", err);
+      }
+
+      throw new Error(errorMessage);
+    }
+
+    const result = await response.json();
+
+    if (result.token) {
       return result;
     } else {
       throw new Error("Token not returned in login response.");
