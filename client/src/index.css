@@ -10,6 +10,8 @@
   --color-background: #F1F8F5; /* Light Greenish White */
   --color-text: #2D6A4F; /* Dark Green for contrast */
   --color-secondary-text: #4db385; /* Soft Mint */
+  --color-button-primary-gray: #bfbfbf; /* Soft Mint */
+  --color-button-hover-gray: #e6e6e6; /* Soft Mint */
   /* --color-button: #76C7A4; Medium Pastel Green */
   /* --color-hover: #5BAE8C; Slightly darker pastel green */
 }

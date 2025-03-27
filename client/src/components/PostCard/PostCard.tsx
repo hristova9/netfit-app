@@ -11,6 +11,8 @@ interface PostCardProps {
   image?: string;
 }
 
+const DEFAULT_AVATAR = "https://via.placeholder.com/150?text=User";
+
 export const PostCard: React.FC<PostCardProps> = ({
   name,
   title,
@@ -20,6 +22,7 @@ export const PostCard: React.FC<PostCardProps> = ({
   description,
 }) => {
   const [likes, setLikes] = useState(0);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [comments, setComments] = useState([]);
 
   // Handler functions
@@ -34,7 +37,7 @@ export const PostCard: React.FC<PostCardProps> = ({
     <div className="post-card">
       {/* Post Owner Info */}
       <div className="post-card-owner">
-        <img src={avatar} alt="User Avatar" className="owner-avatar" />
+        <img src={avatar || DEFAULT_AVATAR} alt="User Avatar" className="owner-avatar" />
         <div>
           <h3 className="owner-name">{name}</h3>
           <p className="post-date-created">{dateCreated}</p>

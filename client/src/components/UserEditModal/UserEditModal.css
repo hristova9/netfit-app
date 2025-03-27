@@ -1,0 +1,60 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Modal Box */
+.modal-content {
+  width: 60vw;
+  padding: 20px;
+  border-radius: 30px;
+  background-color: white;
+}
+
+.modal-form-edit {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  align-content: space-between;
+  gap: 30px;
+}
+
+.modal-input-fields {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-actions {
+  width: 80%;
+  margin-top: 15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* .modal-content button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.modal-content button:first-child {
+  background: green;
+  color: white;
+}
+
+.modal-content button:last-child {
+  background: gray;
+  color: white;
+} */

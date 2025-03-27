@@ -21,6 +21,9 @@ export class User {
   @Column({ type: "int", nullable: true })
   age: number;
 
+  @Column({ type: "varchar", length: 255, nullable: true })
+  description: string;
+
   @Column({ type: "boolean", default: false })
   isAdmin: boolean;
   

@@ -1,13 +1,24 @@
 export interface User {
-    user_id: string;
+    id: string;
     firstName: string;
     lastName: string;
     email: string;
     password?: string;
-    age?: number;
+    isAdmin?: boolean;
     avatar?: string;
     cover?: string;
-    user_description?: string;
+    description?: string;
+}
+
+export interface UserEdit {
+    firstName: string;
+    lastName: string;
+    description: string;
+}
+
+export interface Trainer extends User {
+    skills?: string[];
+    raiting?: number;
 }
 
 export interface UserRegistration {

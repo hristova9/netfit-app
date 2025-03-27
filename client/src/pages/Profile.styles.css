@@ -8,17 +8,29 @@
   border-radius: 30px;
 }
 
-.cover-photo {
+/* .cover-photo {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
+} */
 
 /* Profile Section */
+.profile-actions{
+  height: 50px;
+  display: flex;
+  justify-content: end;
+}
+
+.edit-profile, .delete-profile {
+  color: var(--color-text);
+
+}
+
 .profile-section {
   text-align: center;
-  margin-top: -75px; /* Adjust based on avatar size */
+  margin-top: -125px; /* Adjust based on avatar size */
 }
+
 
 .avatar-container {
   width: 150px;
@@ -26,12 +38,21 @@
   margin: 0 auto;
   border-radius: 50%;
   overflow: hidden;
+  background-color: white;
+  color: var(--color-secondary);
+  display: flex;
+  align-items: center;  /* Center vertically */
+  justify-content: center;
 }
 
 .avatar {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.avatar-icon{
+font-size: 4em;
 }
 
 .user-name {

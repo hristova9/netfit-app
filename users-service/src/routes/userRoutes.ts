@@ -32,6 +32,13 @@ userRouter.get("/", async (ctx) => {
 userRouter.get("/:id", async (ctx) => {
   try {
     const { id } = ctx.params;
+    console.log(id);
+    console.log(ctx.state.user);
+    
+    
+    // if(id === "me"){
+    //   id = ctx.state.user;
+    // }
     const user = await getUserById(id);
     ctx.body = user;
   } catch (error) {
@@ -46,7 +53,7 @@ userRouter.get("/:id", async (ctx) => {
   }
 });
 
-userRouter.put("/:id", authMiddleware, async (ctx) => {
+userRouter.put("/:id", async (ctx) => {
   const { id } = ctx.params;
   const body = ctx.request.body as IUser;
 
@@ -65,7 +72,7 @@ userRouter.put("/:id", authMiddleware, async (ctx) => {
   }
 });
 
-userRouter.delete("/:id", authMiddleware, async (ctx) => {
+userRouter.delete("/:id", async (ctx) => {
   try {
     const { id } = ctx.params;
     await deleteUserById(id);

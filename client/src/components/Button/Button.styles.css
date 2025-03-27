@@ -9,7 +9,7 @@ button {
 }
 
 button:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .auth-button {
@@ -22,6 +22,32 @@ button:hover {
 
 .auth-button:hover {
   background-color: var(--color-secondary);
-  color: var(--color-primary)
+  color: var(--color-primary);
 }
 
+.save-button,
+.cancel-button {
+  padding: 0;
+  margin-top: 30px;
+  width: 150px;
+}
+
+.save-button {
+  background-color: var(--color-primary);
+  color: var(--color-background);
+}
+
+.save-button:hover {
+  background-color: var(--color-secondary);
+  color: var(--color-primary);
+}
+
+.cancel-button {
+  background-color: var(--color-button-primary-gray);
+  color: white;
+}
+
+.cancel-button:hover {
+  background-color: var(--color-button-hover-gray);
+  color: var(--color-primary);
+}

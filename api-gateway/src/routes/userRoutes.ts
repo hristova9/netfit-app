@@ -1,7 +1,7 @@
 import Router from "koa-router";
 import { config } from "../config/config";
 import HttpError from "../models/error.instance";
-import { log } from "console";
+import authMiddleware from "../middlewares/authMiddleware";
 
 const userRoutes = new Router();
 
@@ -12,24 +12,26 @@ const forwardRequest = async (
   ctx?: any
 ) => {
   try {
-    console.log("Forwarding request to:", serviceUrl);
-    console.log("Request method:", method);
-    console.log("Request body:", body);
-    const response = await fetch(serviceUrl, {
+    const options: RequestInit = {
       method,
       headers: {
         "Content-Type": "application/json",
-        cookie: ctx.headers.cookie || "", 
+        cookie: ctx.headers.cookie || "",
       },
-      body: body ? JSON.stringify(body) : null,
       credentials: "include",
-    });
+    };
+
+    if (body && method !== "GET" && method !== "DELETE") {
+      options.body = JSON.stringify(body);
+    }
+
+    const response = await fetch(serviceUrl, options);
+    if (response.status === 204) {
+      return;
+    }
 
     if (!response.ok) {
-      console.log("Error in forwarding request - Status:", response.status);
       const errorData = await response.json();
-      console.log("Error response:", errorData);
-
       return errorData;
     }
 
@@ -38,9 +40,10 @@ const forwardRequest = async (
       ctx.set("Set-Cookie", setCookieHeader);
     }
 
-    return response.json();
+    return await response.json();
   } catch (error) {
     if (error instanceof HttpError) {
+      console.error("Forward request error:", error);
       throw error;
     } else {
       throw new HttpError(500, { message: "Internal Service Error" }, "");
@@ -75,8 +78,6 @@ userRoutes.post("/auth/register", async (ctx) => {
 userRoutes.post("/auth/login", async (ctx) => {
   try {
     const body = ctx.request.body;
-    console.log(body);
-
     if (body) {
       console.log("yes");
 
@@ -109,7 +110,7 @@ userRoutes.post("/auth/logout", async (ctx) => {
       ctx
     );
     ctx.status = 200;
-    ctx.body = response;
+    ctx.body = await response;
   } catch (error) {
     if (error instanceof HttpError) {
       ctx.status = error.status || 500;
@@ -142,25 +143,27 @@ userRoutes.get("/users", async (ctx) => {
   }
 });
 
-userRoutes.get("/users/:id", async (ctx) => {
+userRoutes.get("/users/me", authMiddleware, async (ctx) => {
+  const user = ctx.state.user;
+
+  if (!user.id) {
+    ctx.status = 400;
+    ctx.body = { error: "User ID not found in token" };
+    return;
+  }
+
   try {
-    const { id } = ctx.params;
     const response = await forwardRequest(
-      `${config.usersServiceUrl}/users/${id}`,
+      `${config.usersServiceUrl}/users/${user.id}`,
       "GET",
+      undefined,
       ctx
     );
-
     ctx.status = 200;
     ctx.body = response;
   } catch (error) {
-    if (error instanceof HttpError) {
-      ctx.status = error.status || 500;
-      ctx.body = error.data || { message: "Internal Server Error" };
-    } else {
-      ctx.status = 500;
-      ctx.body = { message: "Internal Server Error" };
-    }
+    ctx.status = 500;
+    ctx.body = { error: "Failed to fetch user data" };
   }
 });
 
@@ -171,21 +174,21 @@ userRoutes.put("/users/:id", async (ctx) => {
 
     if (userData) {
       const response = await forwardRequest(
-        `${config.usersServiceUrl}/${id}`,
+        `${config.usersServiceUrl}/users/${id}`,
         "PUT",
         userData,
         ctx
       );
       ctx.status = 200;
-      ctx.body = response;
+      ctx.body = await response;
     }
   } catch (error) {
     if (error instanceof HttpError) {
       ctx.status = error.status || 500;
-      ctx.body = error.data || { message: "Internal Server Error" };
-    } else if (error instanceof Error) {
+      ctx.body = error.message ;
+    } else {
       ctx.status = 500;
-      ctx.body = { message: error.message || "Internal Server Error" };
+      ctx.body = { message: "Internal Server Error" };
     }
   }
 });
@@ -193,18 +196,25 @@ userRoutes.put("/users/:id", async (ctx) => {
 userRoutes.delete("/users/:id", async (ctx) => {
   try {
     const { id } = ctx.params;
+    console.log("Deleting user with ID:", id);
     const response = await forwardRequest(
       `${config.usersServiceUrl}/users/${id}`,
       "DELETE",
+      undefined,
       ctx
     );
 
-    ctx.status = 200;
-    ctx.body = response;
+    if (response?.status === 204) {
+      ctx.status = 204;
+      ctx.body = { message: "User deleted successfully" };
+    } else {
+      ctx.status = 500;
+      ctx.body = { message: "Failed to delete user" };
+    }
   } catch (error) {
     if (error instanceof HttpError) {
       ctx.status = error.status || 500;
-      ctx.body = error.data || { message: "Internal Server Error" };
+      ctx.body = error.message;
     } else {
       ctx.status = 500;
       ctx.body = { message: "Internal Server Error" };
