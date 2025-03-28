@@ -7,6 +7,8 @@ import MainLayout from "./layouts/MainLayout";
 import Profile from "./pages/Profile";
 import People from "./pages/People";
 import Chats from "./pages/Chats";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import PublicRoute from "./components/PublicRoute/PublicRoute";
 // import PublicRoute from "../../../../project-demo/files/PublicRoute/PublicRoute";
 // import { AuthProvider } from "../../../../project-demo/files/authContext";
 
@@ -14,6 +16,7 @@ function App() {
   return (
     <Router>
       <Routes>
+      <Route element={<ProtectedRoute />}>
           <Route
             path="/"
             element={
@@ -46,8 +49,11 @@ function App() {
               </MainLayout>
             }
           />
+        </Route>
+        <Route element={<PublicRoute />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          </Route>
       </Routes>
     </Router>
   );

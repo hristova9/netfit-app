@@ -128,6 +128,14 @@ userRoutes.post("/auth/logout",authMiddleware, async (ctx) => {
   }
 });
 
+userRoutes.get("/auth/validate-token", authMiddleware, async (ctx) => {
+  if(ctx.status === 401){
+    ctx.body = {message: "Unauthorized"}
+    return false;
+  }
+  ctx.body = { message: "Token is valid", user: ctx.state.user }
+});
+
 userRoutes.get("/users", async (ctx) => {
   try {
     const response = await forwardRequest(

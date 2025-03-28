@@ -6,11 +6,15 @@ import blacklistService  from '../services/blacklist.service';
 
 const authMiddleware = async (ctx: Context, next: Next) => {
   const token = ctx.cookies.get('token');
+  console.log(token);
+  
 
   // Check if the token exists
   if (!token) {
     ctx.status = 401;
     ctx.body = { error: 'Access denied. No token provided.' };
+    console.log("no token");
+    
     return;
   }
 
@@ -18,6 +22,8 @@ const authMiddleware = async (ctx: Context, next: Next) => {
   if (await blacklistService.isTokenBlacklisted(token)) {
     ctx.status = 401;
     ctx.body = { error: 'Token is blacklisted, possibly invalid or expired' };
+    console.log("blacklisted");
+    
     return;
   }
 
@@ -30,7 +36,8 @@ const authMiddleware = async (ctx: Context, next: Next) => {
     console.log("decoded - "  + decoded);
     console.log("cts.state.user2 - "  + ctx.state.user);
     
-
+    console.log("decoded token", decoded);
+    
     // Proceed to the next middleware or route handler
     await next();
   } catch (error) {
