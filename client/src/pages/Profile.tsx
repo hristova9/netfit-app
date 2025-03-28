@@ -3,39 +3,43 @@ import "./Profile.styles.css";
 // import { PostCard } from "../components/PostCard/PostCard";
 import useUserProfile from "../hooks/useUserProfile";
 import { FaUser } from "react-icons/fa6";
-import { FaPen, FaTrash } from "react-icons/fa";
+import { FaPen } from "react-icons/fa";
 import { useUserEdit } from "../hooks/useUserEdit";
 import { useEffect, useState } from "react";
 import UserEditModal from "../components/UserEditModal/UserEditModal";
 import { UserEdit } from "../models/User.model";
-import { useUserDelete } from "../hooks/useUserDelete";
-// import { PostList } from '../components/PostList/PostList';
+import { useDispatch } from "react-redux";
+import { setUser } from "../store/usersSlice";
 
-const Profile = () => {
-  const { user, loading, error } = useUserProfile();
+const Profile: React.FC = () => {
+  const {
+    user,
+    loading: isUserLoading,
+    error: userError,
+    refetch,
+  } = useUserProfile();
   const { updateProfile } = useUserEdit();
-  const { deleteProfile } = useUserDelete();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [updatedData, setUpdatedData] = useState<UserEdit>({
     firstName: "",
     lastName: "",
     description: "",
   });
-  
+  const dispatch = useDispatch();
+
   useEffect(() => {
     if (user) {
       setUpdatedData({
-        firstName: user.firstName,
-        lastName: user.lastName,
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
         description: user.description || "",
       });
     }
   }, [user]);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
+  if (isUserLoading) return <p>Loading...</p>;
+  if (userError) return <p>{userError}</p>;
   if (!user) return <p>No user data available.</p>;
-
 
   const handleChange = (updatedFields: {
     firstName: string;
@@ -47,33 +51,17 @@ const Profile = () => {
       ...updatedFields,
     }));
     console.log(updatedData);
-    
   };
 
   const handleUpdateProfile = async (ev: React.FormEvent<HTMLElement>) => {
     ev.preventDefault();
-
     if (!updatedData) return;
+
     await updateProfile(user, updatedData);
+    dispatch(setUser({ ...user, ...updatedData }));
+    refetch();
     setIsModalOpen(false);
   };
-
-  const handleDeleteProfile = async () => {
-    if (confirm("Are you sure you want to delete your profile?")) {
-      console.log("in profile", user.id);
-      
-      await deleteProfile(user.id);
-      // Redirect or handle UI changes after deletion
-    }
-  };
-
-  // Sample user data
-  // const user = {
-  //   name: 'Jane Doe',
-  //   avatar: 'https://randomuser.me/api/portraits/women/1.jpg',
-  //   coverPhoto: 'https://plus.unsplash.com/premium_photo-1700346373090-151ac589b07d?q=80&w=2664&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  //   bio: 'Fitness enthusiast | Traveler | Blogger',
-  // };
 
   // Sample posts data
   // const posts = [
@@ -102,9 +90,6 @@ const Profile = () => {
       <div className="profile-actions">
         <button className="edit-profile" onClick={() => setIsModalOpen(true)}>
           <FaPen /> Edit
-        </button>
-        <button className="delete-profile" onClick={handleDeleteProfile}>
-          <FaTrash /> Delete
         </button>
       </div>
       <div className="profile-section">
