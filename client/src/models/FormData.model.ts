@@ -8,3 +8,4 @@ export interface FormDataSignUp extends FormDataSignIn {
     last_name: string;
     repassword: string;
 }
+

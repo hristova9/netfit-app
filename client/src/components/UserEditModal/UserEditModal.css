@@ -10,7 +10,6 @@
   align-items: center;
 }
 
-/* Modal Box */
 .modal-content {
   width: 60vw;
   padding: 20px;
@@ -41,20 +40,3 @@
   display: flex;
   justify-content: space-between;
 }
-
-/* .modal-content button {
-  padding: 8px 15px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.modal-content button:first-child {
-  background: green;
-  color: white;
-}
-
-.modal-content button:last-child {
-  background: gray;
-  color: white;
-} */

@@ -2,7 +2,7 @@ import Router from "koa-router";
 import { config } from "../config/config";
 import HttpError from "../models/error.instance";
 import authMiddleware from "../middlewares/authMiddleware";
-import blacklistService  from '../services/blacklist.service';
+import blacklistService from "../services/blacklist.service";
 
 const userRoutes = new Router();
 
@@ -102,8 +102,8 @@ userRoutes.post("/auth/login", async (ctx) => {
   }
 });
 
-userRoutes.post("/auth/logout",authMiddleware, async (ctx) => {
-  const token = ctx.cookies.get('token');
+userRoutes.post("/auth/logout", authMiddleware, async (ctx) => {
+  const token = ctx.cookies.get("token");
   try {
     const response = await forwardRequest(
       `${config.usersServiceUrl}/auth/logout`,
@@ -113,7 +113,7 @@ userRoutes.post("/auth/logout",authMiddleware, async (ctx) => {
     );
     ctx.status = 200;
     ctx.body = await response;
-    if(response.status === 204 && token ){
+    if (response.status === 204 && token) {
       const expiresIn = 3600;
       await blacklistService.addToBlacklist(token, expiresIn);
     }
@@ -129,11 +129,11 @@ userRoutes.post("/auth/logout",authMiddleware, async (ctx) => {
 });
 
 userRoutes.get("/auth/validate-token", authMiddleware, async (ctx) => {
-  if(ctx.status === 401){
-    ctx.body = {message: "Unauthorized"}
+  if (ctx.status === 401) {
+    ctx.body = { message: "Unauthorized" };
     return false;
   }
-  ctx.body = { message: "Token is valid", user: ctx.state.user }
+  ctx.body = { message: "Token is valid", user: ctx.state.user };
 });
 
 userRoutes.get("/users", async (ctx) => {
@@ -141,6 +141,7 @@ userRoutes.get("/users", async (ctx) => {
     const response = await forwardRequest(
       `${config.usersServiceUrl}/users`,
       "GET",
+      undefined,
       ctx
     );
 
@@ -199,7 +200,7 @@ userRoutes.put("/users/:id", authMiddleware, async (ctx) => {
   } catch (error) {
     if (error instanceof HttpError) {
       ctx.status = error.status || 500;
-      ctx.body = error.message ;
+      ctx.body = error.message;
     } else {
       ctx.status = 500;
       ctx.body = { message: "Internal Server Error" };
@@ -208,7 +209,6 @@ userRoutes.put("/users/:id", authMiddleware, async (ctx) => {
 });
 
 userRoutes.delete("/users/:id", async (ctx) => {
-  
   try {
     const { id } = ctx.params;
     console.log("Deleting user with ID:", id);

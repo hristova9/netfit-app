@@ -1,2 +1,33 @@
+.people-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 30px;
+  gap: 30px;
+}
 
-  
+.people-header-container {
+  width: 60%;
+  text-align: center;
+  padding-bottom: 30px;
+  border-bottom: 1px solid var(--color-primary);
+}
+
+.search-input{
+    margin-top: 30px;
+    max-width: 100%;
+    width: 400px;
+    background-color: var(--color-secondary);
+    color: var(--color-primary);
+    font-weight: bold;
+}
+
+.people-list{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-flow: row wrap;
+    gap: 30px;
+}
