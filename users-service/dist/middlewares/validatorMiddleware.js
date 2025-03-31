@@ -21,10 +21,7 @@ const validator = (schema) => (ctx, next) => __awaiter(void 0, void 0, void 0, f
     const validate = ajv.compile(schema);
     const valid = validate(ctx.request.body);
     if (!valid) {
-        console.error("Validation errors:", validate.errors);
-        ctx.status = 400;
-        ctx.body = { error: "Validation failed", details: validate.errors };
-        return; // Stop further execution
+        ctx.throw(400, { message: validate.errors });
     }
     yield next();
 });

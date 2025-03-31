@@ -1,36 +1,38 @@
-/* ProfilePage.css */
-
-/* Cover Photo */
 .cover-photo-container {
   width: 100%;
   height: 300px;
   overflow: hidden;
   border-radius: 30px;
+  background-color: #c4e3cb;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+}
+.camera-icon {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 20px;
+  border-radius: 50%;
+  padding: 10px;
+  cursor: pointer;
 }
 
-/* .cover-photo {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-} */
-
-/* Profile Section */
-.profile-actions{
+.profile-actions {
   height: 50px;
   display: flex;
   justify-content: end;
 }
 
-.edit-profile, .delete-profile {
+.edit-profile,
+.delete-profile {
   color: var(--color-text);
-
 }
 
 .profile-section {
   text-align: center;
-  margin-top: -125px; /* Adjust based on avatar size */
+  margin-top: -125px;
 }
-
 
 .avatar-container {
   width: 150px;
@@ -41,8 +43,9 @@
   background-color: white;
   color: var(--color-secondary);
   display: flex;
-  align-items: center;  /* Center vertically */
+  align-items: center;
   justify-content: center;
+  position: relative;
 }
 
 .avatar {
@@ -51,8 +54,8 @@
   object-fit: cover;
 }
 
-.avatar-icon{
-font-size: 4em;
+.avatar-icon {
+  font-size: 4em;
 }
 
 .user-name {
@@ -66,7 +69,6 @@ font-size: 4em;
   font-size: 16px;
 }
 
-/* Feed Section */
 .feed-section {
   margin-top: 20px;
   padding: 0 20px;

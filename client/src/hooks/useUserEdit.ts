@@ -1,15 +1,34 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { User, UserEdit } from "../models/User.model";
 import { useEditUserMutation } from "../store/usersApi";
 import { extractErrorMessage } from "../utils/errorHandler";
 
-export const useUserEdit = () => {
+export const useUserEdit = (user?: User | null | undefined) => {
+  const [formData, setFormData] = useState<UserEdit>({
+    firstName: "",
+    lastName: "",
+    description: "",
+  });
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
   const [editUser, { isLoading, error: mutationError }] = useEditUserMutation();
 
-  const updateProfile = async (user: User, formData: UserEdit) => {
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        description: user.description || "",
+      });
+    }
+  }, [user]);
+
+  const handleChange = (updatedFields: Partial<UserEdit>) => {
+    setFormData((prev) => ({ ...prev, ...updatedFields }));
+  };
+
+  const updateProfile = async () => {
     let { firstName, lastName, description } = formData;
     firstName = firstName.trim();
     lastName = lastName.trim();
@@ -24,9 +43,17 @@ export const useUserEdit = () => {
     setError("");
 
     try {
-      await editUser({ ...user, firstName, lastName, description }).unwrap();
-
-      return true;
+      if (user) {
+        const updatedUser = await editUser({
+          ...user,
+          firstName,
+          lastName,
+          description,
+        }).unwrap();
+        return updatedUser;
+      } else {
+        throw new Error("No user available");
+      }
     } catch (error) {
       if (mutationError) {
         setError(extractErrorMessage(mutationError));
@@ -42,6 +69,8 @@ export const useUserEdit = () => {
   };
 
   return {
+    formData,
+    handleChange,
     updateProfile,
     error,
     loading: isLoading || loading,

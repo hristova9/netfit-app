@@ -8,32 +8,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const typeorm_1 = require("typeorm");
-const bcryptjs_1 = __importDefault(require("bcryptjs"));
 let User = class User {
     setDefaultAdmin() {
         if (this.firstName === "Admin") {
             this.isAdmin = true;
         }
-    }
-    hashPassword() {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.password = yield bcryptjs_1.default.hash(this.password, 10);
-        });
     }
 };
 exports.User = User;
@@ -62,6 +44,18 @@ __decorate([
     __metadata("design:type", Number)
 ], User.prototype, "age", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: "varchar", length: 255, nullable: true }),
+    __metadata("design:type", String)
+], User.prototype, "description", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "bytea", nullable: true }),
+    __metadata("design:type", Object)
+], User.prototype, "avatar", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "bytea", nullable: true }),
+    __metadata("design:type", Object)
+], User.prototype, "cover", void 0);
+__decorate([
     (0, typeorm_1.Column)({ type: "boolean", default: false }),
     __metadata("design:type", Boolean)
 ], User.prototype, "isAdmin", void 0);
@@ -71,12 +65,6 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], User.prototype, "setDefaultAdmin", null);
-__decorate([
-    (0, typeorm_1.BeforeInsert)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], User.prototype, "hashPassword", null);
 exports.User = User = __decorate([
     (0, typeorm_1.Entity)("users")
 ], User);

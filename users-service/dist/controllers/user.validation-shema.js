@@ -14,8 +14,11 @@ exports.userValidationSchema = {
             minLength: 8,
             pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*d)[A-Za-zd]{8,}$",
         },
+        description: { type: "string", nullable: true },
         age: { type: "integer", nullable: true },
         isAdmin: { type: "boolean" },
+        avatar: { type: "string", nullable: true }, // Optional field (will be handled in the backend)
+        cover: { type: "string", nullable: true },
     },
     additionalProperties: false,
     required: ["id", "firstName", "lastName", "email", "isAdmin"],
@@ -29,7 +32,7 @@ exports.createUserValidationSchema = {
         password: {
             type: "string",
             minLength: 8,
-            pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*d)[A-Za-zd]{8,}$",
+            pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d]{8,}$",
         },
         isAdmin: { type: "boolean", nullable: true, default: false },
     },
@@ -43,7 +46,7 @@ exports.loginUserValidationSchema = {
         password: {
             type: "string",
             minLength: 8,
-            pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*d)[A-Za-zd]{8,}$",
+            pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d]{8,}$",
         },
     },
     additionalProperties: false,

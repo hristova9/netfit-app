@@ -1,15 +1,15 @@
-// import React from 'react';
 import "./Profile.styles.css";
 // import { PostCard } from "../components/PostCard/PostCard";
 import useUserProfile from "../hooks/useUserProfile";
 import { FaUser } from "react-icons/fa6";
-import { FaPen } from "react-icons/fa";
+import { FaCamera, FaPen } from "react-icons/fa";
 import { useUserEdit } from "../hooks/useUserEdit";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import UserEditModal from "../components/UserEditModal/UserEditModal";
-import { UserEdit } from "../models/User.model";
 import { useDispatch } from "react-redux";
 import { setUser } from "../store/usersSlice";
+import UploadPhotoModal from "../components/UploadPhotoModal/UploadPhotoModal";
+import { useUploadPhoto } from "../hooks/useUploadPhoto";
 
 const Profile: React.FC = () => {
   const {
@@ -18,49 +18,47 @@ const Profile: React.FC = () => {
     error: userError,
     refetch,
   } = useUserProfile();
-  const { updateProfile } = useUserEdit();
+  const { formData, handleChange, updateProfile } = useUserEdit(user);
+  const { uploadPhoto } = useUploadPhoto();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [updatedData, setUpdatedData] = useState<UserEdit>({
-    firstName: "",
-    lastName: "",
-    description: "",
-  });
+  const [isModalPhotoOpen, setIsModalPhotoOpen] = useState(false);
+  const [fileType, setFileType] = useState<"avatar" | "cover" | null>(null);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (user) {
-      setUpdatedData({
-        firstName: user.firstName || "",
-        lastName: user.lastName || "",
-        description: user.description || "",
-      });
-    }
-  }, [user]);
 
   if (isUserLoading) return <p>Loading...</p>;
   if (userError) return <p>{userError}</p>;
   if (!user) return <p>No user data available.</p>;
 
-  const handleChange = (updatedFields: {
-    firstName: string;
-    lastName: string;
-    description: string;
-  }) => {
-    setUpdatedData((prev) => ({
-      ...prev,
-      ...updatedFields,
-    }));
-    console.log(updatedData);
-  };
-
   const handleUpdateProfile = async (ev: React.FormEvent<HTMLElement>) => {
     ev.preventDefault();
-    if (!updatedData) return;
+    const updatedUser = await updateProfile();
+    if (updatedUser) {
+      dispatch(setUser(updatedUser));
+      refetch();
+      setIsModalOpen(false);
+    }
+  };
 
-    await updateProfile(user, updatedData);
-    dispatch(setUser({ ...user, ...updatedData }));
-    refetch();
-    setIsModalOpen(false);
+  const openUploadModal = (type: "avatar" | "cover") => {
+    setFileType(type);
+    setIsModalPhotoOpen(true);
+  };
+
+  const handleFileUpload = async (file: File, fileType: "avatar" | "cover") => {
+    if (!user) return;
+
+    const success = await uploadPhoto(user, file, fileType);
+
+    if (success) {
+      const updatedUser = {
+        ...user,
+        [fileType]: success,
+      };
+
+      dispatch(setUser(updatedUser));
+      refetch();
+      setIsModalPhotoOpen(false);
+    }
   };
 
   // Sample posts data
@@ -83,9 +81,14 @@ const Profile: React.FC = () => {
       <div
         className="cover-photo-container"
         style={{
-          backgroundColor: user.cover || "#C4E3CB",
+          backgroundImage:
+            typeof user.cover === "string" ? `url(${user.cover})` : undefined,
         }}
-      ></div>
+      >
+        <div className="camera-icon" onClick={() => openUploadModal("cover")}>
+          <FaCamera />
+        </div>
+      </div>
 
       <div className="profile-actions">
         <button className="edit-profile" onClick={() => setIsModalOpen(true)}>
@@ -99,6 +102,12 @@ const Profile: React.FC = () => {
           ) : (
             <FaUser className="avatar-icon" />
           )}
+          <div
+            className="camera-icon"
+            onClick={() => openUploadModal("avatar")}
+          >
+            <FaCamera />
+          </div>
         </div>
         <h1 className="user-name">
           {user.firstName} {user.lastName}
@@ -115,9 +124,15 @@ const Profile: React.FC = () => {
       <UserEditModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        userData={updatedData}
+        userData={formData}
         onSave={handleUpdateProfile}
         onChange={handleChange}
+      />
+      <UploadPhotoModal
+        isOpen={isModalPhotoOpen}
+        fileType={fileType as "avatar" | "cover"}
+        onClose={() => setIsModalPhotoOpen(false)}
+        onUpload={handleFileUpload}
       />
     </div>
   );

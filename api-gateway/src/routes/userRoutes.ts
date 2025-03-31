@@ -181,7 +181,7 @@ userRoutes.get("/users/me", authMiddleware, async (ctx) => {
   }
 });
 
-userRoutes.put("/users/:id", async (ctx) => {
+userRoutes.put("/users/:id", authMiddleware, async (ctx) => {
   try {
     const { id } = ctx.params;
     const userData = ctx.request.body;

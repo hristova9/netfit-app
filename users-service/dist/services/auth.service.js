@@ -47,10 +47,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkUserCredentials = void 0;
 const bcryptjs = __importStar(require("bcryptjs"));
-const user_repository_1 = __importDefault(require("../repositories/user.repository")); // Adjust according to your repo
+const user_repository_1 = __importDefault(require("../repositories/user.repository"));
 const checkUserCredentials = (email, password) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log({ email, password });
     const user = yield user_repository_1.default.findOne({ where: { email } });
     if (!user || !user.password) {
+        console.log(false);
         return false;
     }
     const isPasswordMatch = yield bcryptjs.compare(password, user.password);

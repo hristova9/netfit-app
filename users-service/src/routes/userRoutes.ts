@@ -32,13 +32,6 @@ userRouter.get("/", async (ctx) => {
 userRouter.get("/:id", async (ctx) => {
   try {
     const { id } = ctx.params;
-    console.log(id);
-    console.log(ctx.state.user);
-    
-    
-    // if(id === "me"){
-    //   id = ctx.state.user;
-    // }
     const user = await getUserById(id);
     ctx.body = user;
   } catch (error) {
@@ -72,7 +65,7 @@ userRouter.put("/:id", async (ctx) => {
   }
 });
 
-userRouter.delete("/:id", async (ctx) => {
+userRouter.delete("/:id", authMiddleware, async (ctx) => {
   try {
     const { id } = ctx.params;
     await deleteUserById(id);

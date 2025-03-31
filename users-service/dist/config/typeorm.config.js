@@ -1,25 +1,18 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserDataSource = void 0;
 require("reflect-metadata");
 const typeorm_1 = require("typeorm");
 const user_entity_1 = require("../entities/user.entity");
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
+const config_1 = require("./config");
 exports.UserDataSource = new typeorm_1.DataSource({
     type: "postgres",
-    host: process.env.USER_DB_HOST || "localhost",
-    port: Number(process.env.USER_DB_PORT) || 5432,
-    username: process.env.USER_DB_USER || "user",
-    password: process.env.USER_DB_PASSWORD || "password",
-    database: process.env.USER_DB_NAME || "user_db",
+    host: config_1.config.db.host,
+    port: config_1.config.db.port,
+    username: config_1.config.db.username,
+    password: config_1.config.db.password,
+    database: config_1.config.db.database,
     synchronize: true,
     logging: false,
     entities: [user_entity_1.User],
 });
-// UserDataSource.initialize()
-//   .then(() => console.log("✅ User Service Database Connected"))
-//   .catch((err) => console.error("❌ Error connecting to User DB", err));

@@ -24,6 +24,12 @@ export class User {
   @Column({ type: "varchar", length: 255, nullable: true })
   description: string;
 
+  @Column({ nullable: true })
+  avatar: string;
+
+  @Column({ nullable: true })
+  cover: string;
+
   @Column({ type: "boolean", default: false })
   isAdmin: boolean;
   

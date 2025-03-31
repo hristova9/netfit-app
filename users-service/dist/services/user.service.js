@@ -47,11 +47,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteUserById = exports.updateUser = exports.createUser = exports.getUserByEmail = exports.getUserById = exports.getAllUsers = void 0;
 const bcryptjs = __importStar(require("bcryptjs"));
-const user_repository_1 = __importDefault(require("../repositories/user.repository"));
+const user_repository_1 = __importStar(require("../repositories/user.repository"));
 const lodash_1 = __importDefault(require("lodash"));
 const getAllUsers = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        return yield user_repository_1.default.find();
+        return yield (0, user_repository_1.findAllUsers)();
     }
     catch (error) {
         throw new Error("Database error: Unable to retrieve users.");
@@ -59,40 +59,51 @@ const getAllUsers = () => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.getAllUsers = getAllUsers;
 const getUserById = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    return user_repository_1.default.findOne({ where: { id } });
+    const user = yield (0, user_repository_1.findUserById)(id);
+    if (!user)
+        throw new Error("User not found");
+    return user;
 });
 exports.getUserById = getUserById;
 const getUserByEmail = (email) => __awaiter(void 0, void 0, void 0, function* () {
-    return user_repository_1.default.findOne({ where: { email } });
+    const user = yield (0, user_repository_1.findUserByEmail)(email);
+    if (!user)
+        throw new Error("User not found");
+    return user;
 });
 exports.getUserByEmail = getUserByEmail;
 const createUser = (data) => __awaiter(void 0, void 0, void 0, function* () {
-    if (yield user_repository_1.default.findOne({ where: { email: data.email } })) {
-        console.log("hello");
+    if (yield (0, user_repository_1.findUserByEmail)(data.email)) {
         throw new Error(`User with email ${data.email} already exists`);
     }
     const hashedPassword = yield bcryptjs.hash(data.password, 10);
-    const user = user_repository_1.default.create(Object.assign(Object.assign({}, data), { password: hashedPassword }));
-    yield user_repository_1.default.save(user);
-    return user;
+    const newUser = user_repository_1.default.create(Object.assign(Object.assign({}, data), { password: hashedPassword }));
+    return yield (0, user_repository_1.saveUser)(newUser);
 });
 exports.createUser = createUser;
-const updateUser = (id, data) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield user_repository_1.default.findOne({ where: { id } });
-    console.log(user);
+const updateUser = (id, data, files) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield (0, exports.getUserById)(id);
+    if (files['avatar']) {
+        const avatar = files['avatar'][0]; // Access the first file (avatar)
+        user.avatar = avatar.buffer; // Store the file buffer directly in the avatar field
+    }
+    // Handle cover file if uploaded
+    if (files['cover']) {
+        const cover = files['cover'][0]; // Access the first file (cover)
+        user.cover = cover.buffer; // Store the file buffer directly in the cover field
+    }
     if (!user) {
         throw new Error(`User not found`);
     }
     const updatedUser = Object.assign(user, lodash_1.default.omit(data, ["id", "password"]));
-    yield user_repository_1.default.save(updatedUser);
-    return updatedUser;
+    return yield (0, user_repository_1.saveUser)(updatedUser);
 });
 exports.updateUser = updateUser;
 const deleteUserById = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield user_repository_1.default.findOne({ where: { id } });
+    const user = yield (0, exports.getUserById)(id);
     if (!user) {
         throw new Error(`User not found`);
     }
-    yield user_repository_1.default.remove(user);
+    return yield (0, user_repository_1.deleteUser)(user);
 });
 exports.deleteUserById = deleteUserById;
