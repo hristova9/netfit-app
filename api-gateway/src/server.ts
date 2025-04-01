@@ -1,6 +1,7 @@
 import Koa from "koa";
 import bodyParser from "koa-bodyparser";
 import userRoutes from "./routes/userRoutes";
+import authRoutes from "./routes/authRoutes";
 import {config} from "./config/config";
 import cors from "@koa/cors";
 
@@ -19,6 +20,8 @@ app.use(bodyParser());
 
 app.use(userRoutes.routes());
 app.use(userRoutes.allowedMethods());
+app.use(authRoutes.routes());
+app.use(authRoutes.allowedMethods());
 
 const port = config.apiGatewayPort;
 app.listen(port, () => {

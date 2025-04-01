@@ -1,8 +1,8 @@
-class HttpError extends Error {
+class HttpError<T extends Record<string, unknown> = {}> extends Error {
   status: number;
-  data: any;
+  data: T;
 
-  constructor(status: number, data: any, message: string) {
+  constructor(status: number, data: T, message: string) {
     super(message);
     this.status = status;
     this.data = data;
