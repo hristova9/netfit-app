@@ -3,10 +3,13 @@ import { UserLogin } from "../models/User.model";
 import { useNavigate } from "react-router-dom";
 import { isValidEmail } from "../utils/validation";
 import { loginUserServie } from "../services/userService";
+import { useDispatch } from "react-redux";
+import { userApi } from "../store/usersApi";
 
 export const useUserLogin = () => {
   const [error, setError] = useState<string>("");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const loginUser = async (formData: UserLogin) => {
     const { email, password } = formData;
@@ -24,10 +27,9 @@ export const useUserLogin = () => {
 
     try {
       const data = await loginUserServie(trimmedEmail, password);
-      console.log(data);
-      
       
       if (data.token) {
+        dispatch(userApi.util.resetApiState());
         setError("");
         navigate("/");
       } else {

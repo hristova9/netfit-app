@@ -125,8 +125,13 @@ authRouter.post("/logout", async (ctx) => {
     ctx.status = 200;
     ctx.body = { message: "Logged out successfully" };
   } catch (error) {
-    ctx.status = 400;
-    ctx.body = { error: "Invalid token" };
+    if (error instanceof jwt.JsonWebTokenError) {
+      ctx.status = 400;
+      ctx.body = { error: "Invalid token" };
+    } else {
+      ctx.status = 500;
+      ctx.body = { error: "Internal server error" };
+    }
   }
 });
 

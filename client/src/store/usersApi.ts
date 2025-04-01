@@ -13,6 +13,7 @@ export const userApi = createApi({
       return headers;
     },
   }),
+  tagTypes: ["Auth"],
   endpoints: (builder) => ({
     registerUser: builder.mutation<{ token: string }, Partial<User>>({
       query: (user) => ({
@@ -21,24 +22,24 @@ export const userApi = createApi({
         body: user,
       }),
     }),
-    loginUser: builder.mutation<
-      { token: string },
-      { email: string; password: string }
-    >({
+    loginUser: builder.mutation<{ token: string }, { email: string; password: string }>({
       query: ({ email, password }) => ({
         url: "auth/login",
         method: "POST",
         body: { email, password },
       }),
+      invalidatesTags: ["Auth"],
     }),
     logoutUser: builder.mutation<void, void>({
       query: () => ({
         url: "auth/logout",
         method: "POST",
       }),
+      invalidatesTags: ["Auth"],
     }),
-    validateToken: builder.query<boolean, void>({
+    validateToken: builder.query<{message: string}, void>({
       query: () => "auth/validate-token",
+      providesTags: ["Auth"],
     }),
     getAllUsers: builder.query<User[], void>({
       query: () => "users",

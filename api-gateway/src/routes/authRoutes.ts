@@ -49,7 +49,7 @@ authRoutes.post("/auth/login", async (ctx) => {
   }
 });
 
-authRoutes.post("/auth/logout", authMiddleware, async (ctx) => {
+authRoutes.post("/auth/logout", async (ctx) => {
   const token = ctx.cookies.get("token");
   try {
     const response = await forwardRequest(
@@ -74,7 +74,8 @@ authRoutes.get("/auth/validate-token", authMiddleware, async (ctx) => {
     ctx.body = { message: "Unauthorized" };
     return false;
   }
-  ctx.body = { message: "Token is valid", user: ctx.state.user };
+  ctx.body = { message: "Token is valid" };
+  return true;
 });
 
 authRoutes.get("/users", async (ctx) => {

@@ -9,8 +9,6 @@ import People from "./pages/People";
 import Chats from "./pages/Chats";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute/PublicRoute";
-// import PublicRoute from "../../../../project-demo/files/PublicRoute/PublicRoute";
-// import { AuthProvider } from "../../../../project-demo/files/authContext";
 
 function App() {
   return (
