@@ -29,6 +29,23 @@ userRoutes.get("/users/me", authMiddleware, async (ctx) => {
   }
 });
 
+userRoutes.get("/users/:id", authMiddleware, async (ctx) => {
+  const { id } = ctx.params;
+
+  try {
+    const response = await forwardRequest(
+      `${config.usersServiceUrl}/users/${id}`,
+      "GET",
+      ctx,
+      undefined
+    );
+    ctx.status = 200;
+    ctx.body = response;
+  } catch (error) {
+    handleError(ctx, error);
+  }
+});
+
 userRoutes.put("/users/:id", authMiddleware, async (ctx) => {
   const { id } = ctx.params;
   const body = ctx.request.body;

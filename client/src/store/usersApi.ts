@@ -47,6 +47,9 @@ export const userApi = createApi({
     getMyself: builder.query<User, void>({
       query: () => "users/me",
     }),
+    getUserById: builder.query<User, string>({
+      query: (id) => `users/${id}`,
+    }),
     editUser: builder.mutation<User, User>({
       query: (user) => ({
         url: `users/${user.id}`,
@@ -70,6 +73,7 @@ export const {
   useValidateTokenQuery,
   useGetAllUsersQuery,
   useGetMyselfQuery,
+  useGetUserByIdQuery,
   useEditUserMutation,
   useDeleteUserMutation,
 } = userApi;

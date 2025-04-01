@@ -24,7 +24,7 @@ const Sidebar: React.FC = () => {
             </Link>
           </li>
           <li>
-            <Link to="/profile" className={`nav-link ${isActive("/profile")}`}>
+            <Link to="/profile/me" className={`nav-link ${isActive("/profile/me")}`}>
               <FaUser /> Profile
             </Link>
           </li>

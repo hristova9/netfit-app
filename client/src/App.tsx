@@ -24,7 +24,15 @@ function App() {
             }
           />
           <Route
-            path="/profile"
+            path="/profile/me"
+            element={
+              <MainLayout>
+                <Profile />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/profile/:id"
             element={
               <MainLayout>
                 <Profile />

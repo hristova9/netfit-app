@@ -27,7 +27,7 @@ const PeopleListItem: React.FC<PeopleListItemProps> = ({ user }) => {
               type="button"
               title="View Profile"
               className="view-profile-button"
-              onClick={() => navigate(`/${user.id}`)}
+              onClick={() => navigate(`/profile/${user.id}`)}
             />
       </div>
     </li>

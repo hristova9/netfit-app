@@ -17,6 +17,7 @@ const Profile: React.FC = () => {
     loading: isUserLoading,
     error: userError,
     refetch,
+    isOwnProfile
   } = useUserProfile();
   const { formData, handleChange, updateProfile } = useUserEdit(user);
   const { uploadPhoto } = useUploadPhoto();
@@ -31,6 +32,7 @@ const Profile: React.FC = () => {
 
   const handleUpdateProfile = async (ev: React.FormEvent<HTMLElement>) => {
     ev.preventDefault();
+    if (!isOwnProfile) return;
     const updatedUser = await updateProfile();
     if (updatedUser) {
       dispatch(setUser(updatedUser));
@@ -45,7 +47,7 @@ const Profile: React.FC = () => {
   };
 
   const handleFileUpload = async (file: File, fileType: "avatar" | "cover") => {
-    if (!user) return;
+    if (!user || !isOwnProfile) return;
 
     const success = await uploadPhoto(user, file, fileType);
 
@@ -85,15 +87,19 @@ const Profile: React.FC = () => {
             typeof user.cover === "string" ? `url(${user.cover})` : undefined,
         }}
       >
-        <div className="camera-icon" onClick={() => openUploadModal("cover")}>
-          <FaCamera />
-        </div>
+        {isOwnProfile && (
+          <div className="camera-icon" onClick={() => openUploadModal("cover")}>
+            <FaCamera />
+          </div>
+        )}
       </div>
 
       <div className="profile-actions">
-        <button className="edit-profile" onClick={() => setIsModalOpen(true)}>
-          <FaPen /> Edit
-        </button>
+      {isOwnProfile && (
+          <button className="edit-profile" onClick={() => setIsModalOpen(true)}>
+            <FaPen /> Edit
+          </button>
+        )}
       </div>
       <div className="profile-section">
         <div className="avatar-container">
@@ -102,12 +108,14 @@ const Profile: React.FC = () => {
           ) : (
             <FaUser className="avatar-icon" />
           )}
-          <div
-            className="camera-icon"
-            onClick={() => openUploadModal("avatar")}
-          >
-            <FaCamera />
-          </div>
+          {isOwnProfile && (
+            <div
+              className="camera-icon"
+              onClick={() => openUploadModal("avatar")}
+            >
+              <FaCamera />
+            </div>
+          )}
         </div>
         <h1 className="user-name">
           {user.firstName} {user.lastName}
