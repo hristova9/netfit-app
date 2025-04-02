@@ -28,8 +28,8 @@ services:
     # depends_on:
       # - api-gateway
     volumes:
-      - ./client:/app  # Mount the local project into the container
-      - /app/node_modules  # Prevent overwriting node_modules
+      - ./client:/app  
+      - /app/node_modules 
     environment:
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
@@ -53,16 +53,20 @@ services:
     networks:
       - mynetwork
 
-  # post_db:
-  #   image: postgres:17
-  #   container_name: post_db
-  #   restart: always
-  #   environment:
-  #     POSTGRES_USER: ${POST_DB_USER}
-  #     POSTGRES_PASSWORD: ${POST_DB_PASS}
-  #     POSTGRES_DB: ${POST_DB_NAME}
-  #   ports:
-  #     - "5434:5432"
+  post_db:
+    image: postgres:17
+    container_name: post_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POST_DB_USER}
+      POSTGRES_PASSWORD: ${POST_DB_PASS}
+      POSTGRES_DB: ${POST_DB_NAME}
+    ports:
+      - "5434:5432"
+    volumes:
+    - post_db_data:/var/lib/postgresql/data
+    networks:
+      - mynetwork
 
   user-service:
     build: ./users-service
@@ -81,17 +85,19 @@ services:
     networks:
       - mynetwork
 
-  # post-service:
-  #   build: ./post-service
-  #   container_name: post-service
-  #   restart: always
-  #   depends_on:
-  #     - post_db
-  #     - rabbitmq
-  #   ports:
-  #     - "3002:3002"
-  #   env_file:
-  #     - .env
+  post-service:
+    build: ./posts-service
+    container_name: post-service
+    restart: always
+    depends_on:
+      - post_db
+      - rabbitmq
+    ports:
+      - "3002:3002"
+    env_file:
+      - .env
+    networks:
+      - mynetwork
 
   api-gateway:
     build: ./api-gateway
@@ -109,14 +115,19 @@ services:
       USER_DB_USER: ${USER_DB_USER}
       USER_DB_PASS: ${USER_DB_PASS}
       USER_DB_NAME: ${USER_DB_NAME}
+      POST_DB_HOST: ${POST_DB_HOST}
+      POST_DB_PORT: ${POST_DB_PORT}
+      POST_DB_USER: ${POST_DB_USER}
+      POST_DB_PASS: ${POST_DB_PASS}
+      POST_DB_NAME: ${POST_DB_NAME}
       RABBITMQ_URL: ${RABBITMQ_URL}
       API_GATEWAY_PORT: ${API_GATEWAY_PORT}
     networks:
       - mynetwork
 
 volumes:
-  user_db_data:  # Volume for user_db data persistence
-    # driver: local
+  user_db_data:
+  post_db_data:
   redis_data:
   
 networks:
