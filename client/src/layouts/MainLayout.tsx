@@ -1,18 +1,22 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useState } from "react";
 import Sidebar from "../components/Sidebar/Sidebar";
 import "./MainLayout.styles.css";
 
 interface MainLayoutProps {
-    children: ReactNode;  // This type allows any valid JSX elements to be passed as children
-  }
+  children: ReactNode;
+}
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
     <div className="main-layout">
-      <Sidebar /> {/* Sidebar on the left */}
-      <div className="content-area">
-        {children} {/* Content area on the right */}
-      </div>
+      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      <div className="content-area">{children}</div>
     </div>
   );
 };

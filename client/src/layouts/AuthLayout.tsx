@@ -26,7 +26,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
         </div>
         <div className="guest-right-container">
           <div className="right-container-text">
-            <h1>Welcome to FitNet!</h1>
+            <h1>Welcome to NetFit!</h1>
             <p>Join our fitness community and stay connected!</p>
           </div>
           <Link to={switchPath} className="switch-auth-link">

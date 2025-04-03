@@ -1,7 +1,7 @@
 import React from "react";
 // import Navbar from "../components/Navbar";
 import "./Home.styles.css";
-import { PostList } from "../components/PostList/PostList";
+// import { PostList } from "../components/PostList/PostList";
 
 // const mockPosts = [
 //   { id: 1, title: "Hello World", description: "Morning workout complete! 💪" },
@@ -11,7 +11,10 @@ import { PostList } from "../components/PostList/PostList";
 const Home: React.FC = () => {
   return (
       <div className="home-page">
-        <PostList />
+        <h1>Posts</h1>
+        <p>No current posts!</p>
+        
+        {/* <PostList /> */}
         {/* {mockPosts.length > 0 ? (
           mockPosts.map((post) => (
             <PostCard key={post.id} author={post.title} content={post.description} />

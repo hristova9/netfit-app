@@ -2,15 +2,16 @@
   display: flex;
   align-items: center;
   justify-self: center;
-  height: 100vh;
+  min-height: 100vh;
+  overflow-y: auto;
 }
 
 .auth-page {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  align-items: center;
-  height: 80vh;
+  align-items: stretch;
+  min-height: 80vh;
   width: 80vw;
   background-color: white;
   border-radius: 30px;
@@ -22,7 +23,7 @@
   font-size: 20px;
   font-weight: bold;
   padding: 20px;
-  height: 100%;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -45,7 +46,7 @@
   width: 100%;
 }
 
-.auth-form{
+.auth-form {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -75,9 +76,35 @@
   color: red;
   font-weight: 100;
   font-size: 12px;
-  height: 50px; 
+  height: 50px;
   overflow-wrap: break-word;
   overflow: hidden;
   white-space: pre-wrap;
   width: 80%;
+}
+
+@media (max-width: 768px) {
+  .auth-page {
+    flex-direction: column-reverse;
+    min-height: unset;
+    height: auto;
+    width: 100%;
+    margin: 30px;
+  }
+
+  .auth-container {
+    min-height: 100vh;
+    height: auto;
+  }
+
+  .guest-left-container,
+  .guest-right-container {
+    width: 100%;
+    height: auto;
+    border-radius: 30px;
+  }
+
+  .auth-title {
+    font-size: 24px;
+  }
 }
