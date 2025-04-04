@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import { User } from "../../models/User.model";
 import { FaUser } from "react-icons/fa";
 import "./PeopleListItem.css";
@@ -6,10 +5,10 @@ import Button from "../Button/Button";
 
 interface PeopleListItemProps {
   user: User;
+  onClick: () => void;
 }
 
-const PeopleListItem: React.FC<PeopleListItemProps> = ({ user }) => {
-  const navigate = useNavigate();
+const PeopleListItem: React.FC<PeopleListItemProps> = ({ user, onClick }) => {
   return (
     <li className="people-list-item">
       <div className="avatar-container">
@@ -27,7 +26,7 @@ const PeopleListItem: React.FC<PeopleListItemProps> = ({ user }) => {
               type="button"
               title="View Profile"
               className="view-profile-button"
-              onClick={() => navigate(`/profile/${user.id}`)}
+              onClick={onClick}
             />
       </div>
     </li>

@@ -2,13 +2,15 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { User } from "../models/User.model";
 
 interface UserState {
-  user: User | null; 
-  loading: boolean; 
+  user: User | null;
+  users: User[];
+  loading: boolean;
   error: string | null;
 }
 
 const initialState: UserState = {
   user: null,
+  users: [],
   loading: false,
   error: null,
 };
@@ -21,6 +23,14 @@ const userSlice = createSlice({
       state.user = action.payload;
       state.error = null;
     },
+    setUsers: (state, action: PayloadAction<User[]>) => {
+      state.users = action.payload;
+    },
+    updateUserInList: (state, action: PayloadAction<User>) => {
+      state.users = state.users.map((user) =>
+        user.id === action.payload.id ? action.payload : user
+      );
+    },
     setUserLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
     },
@@ -28,12 +38,19 @@ const userSlice = createSlice({
       state.error = action.payload;
     },
     clearUser: (state) => {
-      state.user = null; 
+      state.user = null;
       state.error = null;
     },
   },
 });
 
-export const { setUser, setUserLoading, setUserError, clearUser } = userSlice.actions;
+export const {
+  setUser,
+  setUsers,
+  updateUserInList,
+  setUserLoading,
+  setUserError,
+  clearUser,
+} = userSlice.actions;
 
 export default userSlice.reducer;

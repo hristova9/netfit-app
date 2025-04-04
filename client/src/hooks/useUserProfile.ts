@@ -1,16 +1,20 @@
 import { useLocation } from "react-router-dom";
 import { useGetMyselfQuery, useGetUserByIdQuery } from "../store/usersApi";
+import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { setUser } from "../store/usersSlice";
 
 const useUserProfile = () => {
   const { pathname } = useLocation();
   const id = pathname.split("/").pop();
+  const dispatch = useDispatch();
 
   const {
     data: currentUserData,
     error: currentUserError,
     isLoading: currentUserLoading,
     refetch: refetchCurrentUser,
-  } = useGetMyselfQuery();
+  } = useGetMyselfQuery(undefined, { refetchOnMountOrArgChange: true });
 
   const {
     data: userData,
@@ -21,6 +25,12 @@ const useUserProfile = () => {
     skip: !id || id === "me",
     refetchOnMountOrArgChange: true,
   });
+
+  useEffect(() => {
+    if (currentUserData) {
+      dispatch(setUser(currentUserData)); 
+    }
+  }, [currentUserData, dispatch]);
 
   const isMe = id === "me";
   const user = isMe ? currentUserData : userData; 

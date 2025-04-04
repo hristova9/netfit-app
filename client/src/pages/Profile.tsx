@@ -7,7 +7,7 @@ import { useUserEdit } from "../hooks/useUserEdit";
 import { useState } from "react";
 import UserEditModal from "../components/UserEditModal/UserEditModal";
 import { useDispatch } from "react-redux";
-import { setUser } from "../store/usersSlice";
+import { setUser, updateUserInList } from "../store/usersSlice";
 import UploadPhotoModal from "../components/UploadPhotoModal/UploadPhotoModal";
 import { useUploadPhoto } from "../hooks/useUploadPhoto";
 
@@ -36,6 +36,7 @@ const Profile: React.FC = () => {
     const updatedUser = await updateProfile();
     if (updatedUser) {
       dispatch(setUser(updatedUser));
+      dispatch(updateUserInList(updatedUser));
       refetch();
       setIsModalOpen(false);
     }
