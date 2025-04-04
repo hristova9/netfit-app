@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import { Context, Next } from 'koa';
 import { config } from '../config/config';
 import blacklistService  from '../services/blacklist.service';
+import handleError from '../utils/handleError';
 
 const authMiddleware = async (ctx: Context, next: Next) => {
   const token = ctx.cookies.get('token');
@@ -28,11 +29,15 @@ const authMiddleware = async (ctx: Context, next: Next) => {
 
     await next();
   } catch (error) {
-    ctx.status = 401;
-    ctx.body = {
-      error: 'Authentication failed',
-      message: error instanceof Error ? error.message : 'Invalid token',
-    };
+    if (error instanceof jwt.TokenExpiredError) {
+      ctx.status = 401;
+      ctx.body = { error: "Token has expired, please login again." };
+    } else if (error instanceof jwt.JsonWebTokenError) {
+      ctx.status = 401;
+      ctx.body = { error: "Invalid token, authentication failed." };
+    } else {
+      handleError(ctx, error);
+    }
   }
 };
 

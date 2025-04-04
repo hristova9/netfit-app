@@ -4,6 +4,7 @@ import userRoutes from "./routes/userRoutes";
 import authRoutes from "./routes/authRoutes";
 import {config} from "./config/config";
 import cors from "@koa/cors";
+import postRoutes from "./routes/postRoutes";
 
 const app = new Koa();
 
@@ -20,6 +21,8 @@ app.use(bodyParser());
 
 app.use(userRoutes.routes());
 app.use(userRoutes.allowedMethods());
+app.use(postRoutes.routes());
+app.use(postRoutes.allowedMethods());
 app.use(authRoutes.routes());
 app.use(authRoutes.allowedMethods());
 
