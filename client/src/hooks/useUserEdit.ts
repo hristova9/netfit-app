@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { User, UserEdit } from "../models/User.model";
-import { useEditUserMutation } from "../store/usersApi";
+import { useEditUserMutation } from "../store/users/usersApi";
 import { extractErrorMessage } from "../utils/errorHandler";
 
 export const useUserEdit = (user?: User | null | undefined) => {

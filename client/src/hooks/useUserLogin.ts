@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { isValidEmail } from "../utils/validation";
 import { loginUserServie } from "../services/userService";
 import { useDispatch } from "react-redux";
-import { userApi } from "../store/usersApi";
+import { userApi } from "../store/users/usersApi";
 
 export const useUserLogin = () => {
   const [error, setError] = useState<string>("");

@@ -28,6 +28,13 @@ const UploadPhotoModal: React.FC<UploadPhotoModalProps> = ({
         return () => URL.revokeObjectURL(url);
       }
     };
+
+    const handleCancel = () => {
+      setSelectedFile(null);
+      setPreviewUrl(null);
+      onClose();
+    };
+  
   
     const handleUpload = (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -65,7 +72,7 @@ const UploadPhotoModal: React.FC<UploadPhotoModalProps> = ({
               type="button"
               title="Cancel"
               className="cancel-button"
-              onClick={onClose}
+              onClick={handleCancel}
             />
           </div>
         </form>

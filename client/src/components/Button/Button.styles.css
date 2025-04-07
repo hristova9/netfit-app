@@ -60,3 +60,13 @@ button:hover {
   background-color: var(--color-secondary);
   color: var(--color-primary);
 }
+
+.add-comment-button{
+  width: 150px;
+  background-color: var(--color-primary);
+  color: var(--color-background);
+}
+.add-comment-button:hover{
+  background-color: var(--color-secondary);
+  color: var(--color-primary);
+}

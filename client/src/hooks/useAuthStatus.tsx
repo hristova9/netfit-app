@@ -1,4 +1,4 @@
-import { useValidateTokenQuery } from "../store/usersApi";
+import { useValidateTokenQuery } from "../store/users/usersApi";
 
 const useAuthStatus = () => {
   const { data: isValid, isLoading, error } = useValidateTokenQuery();

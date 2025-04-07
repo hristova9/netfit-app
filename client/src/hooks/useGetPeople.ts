@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
-import { useGetAllUsersQuery } from "../store/usersApi";
-import { setUsers } from "../store/usersSlice";
+import { useGetAllUsersQuery } from "../store/users/usersApi";
+import { setUsers } from "../store/users/usersSlice";
 import { useDispatch } from "react-redux";
 import { RootState } from "../store/store";
 import { useEffect } from "react";

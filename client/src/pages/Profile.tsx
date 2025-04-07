@@ -7,7 +7,7 @@ import { useUserEdit } from "../hooks/useUserEdit";
 import { useState } from "react";
 import UserEditModal from "../components/UserEditModal/UserEditModal";
 import { useDispatch } from "react-redux";
-import { setUser, updateUserInList } from "../store/usersSlice";
+import { setUser, updateUserInList } from "../store/users/usersSlice";
 import UploadPhotoModal from "../components/UploadPhotoModal/UploadPhotoModal";
 import { useUploadPhoto } from "../hooks/useUploadPhoto";
 
@@ -63,21 +63,6 @@ const Profile: React.FC = () => {
       setIsModalPhotoOpen(false);
     }
   };
-
-  // Sample posts data
-  // const posts = [
-  //   {
-  //     id: 1,
-  //     name: "Jane Doe",
-  //     avatar: user.avatar,
-  //     dateCreated: "March 14, 2025",
-  //     title: "Morning Yoga Session",
-  //     image:
-  //       "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=2202&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  //     description:
-  //       "Started my day with a refreshing yoga session. Feeling energized!",
-  //   },
-  // ];
 
   return (
     <div className="profile-page">

@@ -1,4 +1,4 @@
-import { useLogoutUserMutation } from "../store/usersApi";
+import { useLogoutUserMutation } from "../store/users/usersApi";
 
 export const useLogout = () => {
   const [logoutUser] = useLogoutUserMutation();

@@ -1,8 +1,8 @@
 import { useLocation } from "react-router-dom";
-import { useGetMyselfQuery, useGetUserByIdQuery } from "../store/usersApi";
+import { useGetMyselfQuery, useGetUserByIdQuery } from "../store/users/usersApi";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
-import { setUser } from "../store/usersSlice";
+import { setUser } from "../store/users/usersSlice";
 
 const useUserProfile = () => {
   const { pathname } = useLocation();
