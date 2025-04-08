@@ -17,7 +17,7 @@ const Home: React.FC = () => {
   }>({ description: "" });
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const { createNewPost } = usePostCreate();
-  const currentUser = useSelector((state: RootState) => state.users.user);
+  const loggedInUser = useSelector((state: RootState) => state.users.loggedInUser);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -37,11 +37,11 @@ const Home: React.FC = () => {
   const handlePost = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("click save");
-    console.log(currentUser);
+    console.log(loggedInUser);
     
-    if (!currentUser) return;
+    if (!loggedInUser) return;
 
-    const success = await createNewPost(currentUser, formData);
+    const success = await createNewPost(loggedInUser, formData);
     if (success) {
       setFormData({ description: "" });
       setPreviewUrl(null);

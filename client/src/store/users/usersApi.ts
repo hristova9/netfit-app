@@ -22,7 +22,7 @@ export const userApi = createApi({
         body: user,
       }),
     }),
-    loginUser: builder.mutation<{ token: string }, { email: string; password: string }>({
+    loginUser: builder.mutation<{ email: string; password: string }>({
       query: ({ email, password }) => ({
         url: "auth/login",
         method: "POST",
@@ -72,7 +72,7 @@ export const {
   useLogoutUserMutation,
   useValidateTokenQuery,
   useGetAllUsersQuery,
-  useGetMyselfQuery,
+useGetMyselfQuery,
   useGetUserByIdQuery,
   useEditUserMutation,
   useDeleteUserMutation,

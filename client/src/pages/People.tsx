@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 const People: React.FC = () => {
   const { users, loading, error } = useGetPeople();
   const [searchPeople, setSearchPeople] = useState("");
-  const currentUser = useSelector((state: RootState) => state.users.user);
+  const loggedInUser = useSelector((state: RootState) => state.users.loggedInUser);
   const navigate = useNavigate();
 
   if (loading) return <p>Loading...</p>;
@@ -36,7 +36,7 @@ const People: React.FC = () => {
         {filteredUsers && filteredUsers.length > 0 ? (
           filteredUsers.map((user) => (
             <PeopleListItem key={user.id} user={user}
-            onClick= {() => navigate(user.id === currentUser?.id ? "/profile/me" : `/profile/${user.id}`)} />
+            onClick= {() => navigate(user.id === loggedInUser?.id ? "/profile/me" : `/profile/${user.id}`)} />
           ))
         ) : (
           <p>No people found!</p>

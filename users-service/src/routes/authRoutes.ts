@@ -74,11 +74,14 @@ authRouter.post("/login", validator(loginUserValidationSchema), async (ctx) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-        maxAge: 3600000,
+      maxAge: 3600000,
     });
+    const { password, ...sanitizedUser } = user;
 
     ctx.status = 200;
-    ctx.body = { message: "Login successful", token: token };
+    ctx.body = {
+      user: sanitizedUser
+    };
   } catch (err) {
     if (err instanceof Error) {
       ctx.throw(400, err.message);
@@ -110,7 +113,7 @@ authRouter.post("/logout", async (ctx) => {
     }
     const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
     const expiresIn = decoded.exp - Math.floor(Date.now() / 1000);
-    
+
     if (expiresIn > 0) {
       console.log("Invalidating token:", token);
       await addToBlacklist(token, expiresIn);

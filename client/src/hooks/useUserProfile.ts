@@ -1,49 +1,36 @@
 import { useLocation } from "react-router-dom";
-import { useGetMyselfQuery, useGetUserByIdQuery } from "../store/users/usersApi";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
+import { useGetUserByIdQuery } from "../store/users/usersApi";
 import { useDispatch } from "react-redux";
-import { useEffect } from "react";
-import { setUser } from "../store/users/usersSlice";
+import { setCurrentUser } from "../store/users/usersSlice";
 
 const useUserProfile = () => {
   const { pathname } = useLocation();
   const id = pathname.split("/").pop();
   const dispatch = useDispatch();
 
-  const {
-    data: currentUserData,
-    error: currentUserError,
-    isLoading: currentUserLoading,
-    refetch: refetchCurrentUser,
-  } = useGetMyselfQuery(undefined, { refetchOnMountOrArgChange: true });
-
-  const {
-    data: userData,
-    error: userError,
-    isLoading: userLoading,
-    refetch: refetchUser,
-  } = useGetUserByIdQuery(id as string, {
-    skip: !id || id === "me",
-    refetchOnMountOrArgChange: true,
-  });
-
-  useEffect(() => {
-    if (currentUserData) {
-      dispatch(setUser(currentUserData)); 
-    }
-  }, [currentUserData, dispatch]);
+  const loggedInUser = useSelector(
+    (state: RootState) => state.users.loggedInUser
+  );
 
   const isMe = id === "me";
-  const user = isMe ? currentUserData : userData; 
-  const error = currentUserError || userError;
-  const loading = currentUserLoading || userLoading;
-  const refetch = isMe ? refetchCurrentUser : refetchUser;
-  const isOwnProfile = user && currentUserData && user.id === currentUserData.id;
 
-  if (error) {
-    return { user: null, loading: false, error: (error as Error).message, isOwnProfile: false };
-  }
+  const {
+    data: currentUser,
+  } = useGetUserByIdQuery(id as string, {
+    skip: isMe,
+  });
 
-  return { user, loading, error: null, refetch, isOwnProfile: isOwnProfile ?? false };
+  dispatch(setCurrentUser(currentUser ?? null));
+  console.log("useUserProfile - currentUser:", currentUser);
+  console.log("Pathname:", pathname, "ID:", id);
+
+  const user = isMe ? loggedInUser : currentUser;
+  const isOwnProfile = isMe;
+  const loading = !user;
+
+  return { user, loading, isOwnProfile };
 };
 
 export default useUserProfile;

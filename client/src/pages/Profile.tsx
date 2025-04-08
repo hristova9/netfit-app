@@ -1,5 +1,4 @@
 import "./Profile.styles.css";
-// import { PostCard } from "../components/PostCard/PostCard";
 import useUserProfile from "../hooks/useUserProfile";
 import { FaUser } from "react-icons/fa6";
 import { FaCamera, FaPen } from "react-icons/fa";
@@ -7,18 +6,13 @@ import { useUserEdit } from "../hooks/useUserEdit";
 import { useState } from "react";
 import UserEditModal from "../components/UserEditModal/UserEditModal";
 import { useDispatch } from "react-redux";
-import { setUser, updateUserInList } from "../store/users/usersSlice";
+import { setLoggedInUser, updateUserInList } from "../store/users/usersSlice";
 import UploadPhotoModal from "../components/UploadPhotoModal/UploadPhotoModal";
 import { useUploadPhoto } from "../hooks/useUploadPhoto";
 
 const Profile: React.FC = () => {
-  const {
-    user,
-    loading: isUserLoading,
-    error: userError,
-    refetch,
-    isOwnProfile
-  } = useUserProfile();
+  const { user, loading: isUserLoading, isOwnProfile } = useUserProfile();
+
   const { formData, handleChange, updateProfile } = useUserEdit(user);
   const { uploadPhoto } = useUploadPhoto();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,7 +21,6 @@ const Profile: React.FC = () => {
   const dispatch = useDispatch();
 
   if (isUserLoading) return <p>Loading...</p>;
-  if (userError) return <p>{userError}</p>;
   if (!user) return <p>No user data available.</p>;
 
   const handleUpdateProfile = async (ev: React.FormEvent<HTMLElement>) => {
@@ -35,9 +28,8 @@ const Profile: React.FC = () => {
     if (!isOwnProfile) return;
     const updatedUser = await updateProfile();
     if (updatedUser) {
-      dispatch(setUser(updatedUser));
+      dispatch(setLoggedInUser(updatedUser));
       dispatch(updateUserInList(updatedUser));
-      refetch();
       setIsModalOpen(false);
     }
   };
@@ -58,8 +50,7 @@ const Profile: React.FC = () => {
         [fileType]: success,
       };
 
-      dispatch(setUser(updatedUser));
-      refetch();
+      dispatch(setLoggedInUser(updatedUser));
       setIsModalPhotoOpen(false);
     }
   };
@@ -81,7 +72,7 @@ const Profile: React.FC = () => {
       </div>
 
       <div className="profile-actions">
-      {isOwnProfile && (
+        {isOwnProfile && (
           <button className="edit-profile" onClick={() => setIsModalOpen(true)}>
             <FaPen /> Edit
           </button>
@@ -108,13 +99,6 @@ const Profile: React.FC = () => {
         </h1>
         <p className="user-bio">{user.description}</p>
       </div>
-
-      {/* <div className="feed-section">
-        {posts.map((post) => (
-          <PostCard key={post.id} {...post} />
-        ))}
-      </div> */}
-
       <UserEditModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

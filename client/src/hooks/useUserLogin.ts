@@ -1,16 +1,15 @@
 import { useState } from "react";
 import { UserLogin } from "../models/User.model";
-import { useNavigate } from "react-router-dom";
 import { isValidEmail } from "../utils/validation";
-import { loginUserServie } from "../services/userService";
 import { useDispatch } from "react-redux";
-import { userApi } from "../store/users/usersApi";
+import { setLoggedInUser } from "../store/users/usersSlice";
+import { useLoginUserMutation } from "../store/users/usersApi";
 
 export const useUserLogin = () => {
   const [error, setError] = useState<string>("");
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const [loginUserMutation] = useLoginUserMutation();
+  
   const loginUser = async (formData: UserLogin) => {
     const { email, password } = formData;
     const trimmedEmail = email.trim();
@@ -26,18 +25,19 @@ export const useUserLogin = () => {
     }
 
     try {
-      const data = await loginUserServie(trimmedEmail, password);
-      
-      if (data.token) {
-        dispatch(userApi.util.resetApiState());
+      const data = await loginUserMutation({
+        email: trimmedEmail,
+        password,
+      }).unwrap();
+
+      if (data.user) {
+        dispatch(setLoggedInUser(data.user));
         setError("");
-        navigate("/");
+        return true;
       } else {
         setError("Invalid email or password");
         return false;
       }
-
-      return true;
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);

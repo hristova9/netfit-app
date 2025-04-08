@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { Post } from "../models/Post.model";
+import { Post } from "../../models/Post.model";
 
 const API_URL = "http://localhost:3000/";
 
@@ -13,11 +13,11 @@ export const postsApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ["Posts"], // Cache tag for automatic updates
+  tagTypes: ["Posts"], 
   endpoints: (builder) => ({
     getAllPosts: builder.query<Post[], void>({
       query: () => "posts",
-      providesTags: ["Posts"], // Refresh when posts change
+      providesTags: ["Posts"], 
     }),
     getPostById: builder.query<Post, string>({
       query: (id) => `posts/${id}`,
@@ -29,7 +29,7 @@ export const postsApi = createApi({
         method: "POST",
         body: post,
       }),
-      invalidatesTags: ["Posts"], // Refresh posts list after adding
+      invalidatesTags: ["Posts"],
     }),
     editPost: builder.mutation<Post, Post>({
       query: (post) => ({
@@ -37,14 +37,14 @@ export const postsApi = createApi({
         method: "PUT",
         body: post,
       }),
-      invalidatesTags: ["Posts"], // Refresh post data
+      invalidatesTags: ["Posts"], 
     }),
     deletePost: builder.mutation<void, string>({
       query: (postId) => ({
         url: `posts/${postId}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Posts"], // Refresh posts list after deletion
+      invalidatesTags: ["Posts"], 
     }),
   }),
 });
