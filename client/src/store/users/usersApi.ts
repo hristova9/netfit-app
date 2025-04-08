@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { User } from "../../models/User.model";
+import { setLoggedInUser } from "./usersSlice";
 
 const API_URL = "http://localhost:3000/";
 
@@ -22,7 +23,10 @@ export const userApi = createApi({
         body: user,
       }),
     }),
-    loginUser: builder.mutation<{ email: string; password: string }>({
+    loginUser: builder.mutation<
+      { user: User },
+      { email: string; password: string }
+    >({
       query: ({ email, password }) => ({
         url: "auth/login",
         method: "POST",
@@ -37,7 +41,7 @@ export const userApi = createApi({
       }),
       invalidatesTags: ["Auth"],
     }),
-    validateToken: builder.query<{message: string}, void>({
+    validateToken: builder.query<{ message: string }, void>({
       query: () => "auth/validate-token",
       providesTags: ["Auth"],
     }),
@@ -46,6 +50,14 @@ export const userApi = createApi({
     }),
     getMyself: builder.query<User, void>({
       query: () => "users/me",
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data: user } = await queryFulfilled;
+          dispatch(setLoggedInUser(user));
+        } catch (error) {
+          console.log("Failed to fetch user on mount:", error);
+        }
+      },
     }),
     getUserById: builder.query<User, string>({
       query: (id) => `users/${id}`,
@@ -72,7 +84,7 @@ export const {
   useLogoutUserMutation,
   useValidateTokenQuery,
   useGetAllUsersQuery,
-useGetMyselfQuery,
+  useGetMyselfQuery,
   useGetUserByIdQuery,
   useEditUserMutation,
   useDeleteUserMutation,

@@ -23,8 +23,6 @@ const useUserProfile = () => {
   });
 
   dispatch(setCurrentUser(currentUser ?? null));
-  console.log("useUserProfile - currentUser:", currentUser);
-  console.log("Pathname:", pathname, "ID:", id);
 
   const user = isMe ? loggedInUser : currentUser;
   const isOwnProfile = isMe;

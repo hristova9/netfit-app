@@ -4,7 +4,8 @@
 
 .post-list{
     display: flex;
-    flex-direction: column;
+    flex-flow: row wrap;
     justify-content: center;
+    align-items: stretch;
     gap:20px;
 }

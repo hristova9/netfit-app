@@ -9,8 +9,11 @@ import People from "./pages/People";
 import Chats from "./pages/Chats";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute/PublicRoute";
+import { useGetMyselfQuery } from "./store/users/usersApi";
 
 function App() {
+  useGetMyselfQuery();
+  
   return (
     <Router>
       <Routes>

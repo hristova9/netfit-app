@@ -23,7 +23,7 @@ const forwardRequest = async (
 
     const response = await fetch(serviceUrl, options);
     if (response.status === 204) {
-      return;
+      return { status: 204 };
     }
 
     if (!response.ok) {

@@ -12,6 +12,8 @@
   --color-secondary-text: #4db385; /* Soft Mint */
   --color-button-primary-gray: #bfbfbf; /* Soft Mint */
   --color-button-hover-gray: #e6e6e6; /* Soft Mint */
+  --color-warning-primary: #b30000; /* dark red */
+  --color-warning-secondary: #813131 ; /* darker red */
 }
 
 * {

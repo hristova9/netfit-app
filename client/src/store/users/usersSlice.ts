@@ -22,14 +22,10 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     setLoggedInUser: (state, action: PayloadAction<User | null>) => {
-      console.log("logged in:" , action.payload);
-      
       state.loggedInUser = action.payload;
       state.error = null;
     },
     setCurrentUser: (state, action: PayloadAction<User | null>) => {
-      console.log("current:" , action.payload);
-
       state.currentUser = action.payload;
       state.error = null;
     },
