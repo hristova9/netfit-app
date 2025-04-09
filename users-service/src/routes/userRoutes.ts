@@ -46,6 +46,33 @@ userRouter.get("/:id", async (ctx) => {
   }
 });
 
+userRouter.post("/batch", async (ctx) => {
+  try {
+    const { ids } = ctx.request.body as { ids: string[] };
+
+    if (!Array.isArray(ids) || ids.length === 0) {
+      ctx.throw(400, "User IDs array is required.");
+    }
+
+    const users = await Promise.all(ids.map((id) => getUserById(id)));
+    const simplifiedUsers = users.map(({ id, firstName, lastName, avatar }) => ({
+      id,
+      firstName,
+      lastName,
+      avatar,
+    }));
+
+    ctx.status = 200;
+    ctx.body = simplifiedUsers;
+  } catch (error) {
+    if (error instanceof Error) {
+      ctx.throw(404, error.message);
+    } else {
+      ctx.throw(500, "An error occurred while retrieving users.");
+    }
+  }
+});
+
 userRouter.put("/:id", async (ctx) => {
   const { id } = ctx.params;
   const body = ctx.request.body as IUser;

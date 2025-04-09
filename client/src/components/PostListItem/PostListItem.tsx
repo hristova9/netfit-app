@@ -47,9 +47,9 @@ export const PostListItem: React.FC<PostListItemProps> = ({
     <div className="post-list-item">
       <div className="post-list-item-owner">
           <div className="owner-avatar-container">
-            {post.ownerAvatar ? (
+            {post.owner?.avatar ? (
               <img
-                src={post.ownerAvatar}
+                src={post.owner.avatar}
                 alt="Avatar"
                 className="owner-avatar"
               />
@@ -59,7 +59,7 @@ export const PostListItem: React.FC<PostListItemProps> = ({
           </div>
           <div>
             <h3 className="owner-name">
-              {post.ownerFirstName} {post.ownerLastName}
+              {post.owner?.firstName} {post.owner?.lastName}
             </h3>
             <p className="post-date-created">
               {new Date(post.createdAt).toLocaleDateString()}

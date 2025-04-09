@@ -88,9 +88,11 @@ const [createPost, { isLoading, error: mutationError }] = useCreatePostMutation(
       }
       const newPost: Omit<Post, "id"> = {
         ownerId: user.id,
-        ownerFirstName: user.firstName,
-        ownerLastName: user.lastName,
-        ownerAvatar: user.avatar || "",
+        // owner: {
+        //     firstName: user.firstName,
+        //     lastName: user.lastName,
+        //     avatar: user.avatar || ""
+        // },
         description,
         photo: photoUrl,
         createdAt: new Date().toISOString(),

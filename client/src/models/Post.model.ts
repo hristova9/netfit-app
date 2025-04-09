@@ -4,9 +4,11 @@ export interface Post {
   photo?: string | null;
   createdAt: Date | string;
   ownerId: string;
-  ownerFirstName: string;
-  ownerLastName: string;
-  ownerAvatar?: string;
+  owner?: {
+      firstName: string;
+      lastName: string;
+      avatar?: string;
+  }
   likesCount?: number;
   hasLiked?: boolean;
 }

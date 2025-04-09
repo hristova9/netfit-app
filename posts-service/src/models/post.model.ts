@@ -4,11 +4,6 @@ export interface IPost {
   photo?: string;
   createdAt: Date | string;
   ownerId: string;
-  ownerFirstName: string;
-  ownerLastName: string;
-  ownerAvatar?: string;
-  likesCount?: number;
-  hasLiked?: boolean;
 }
 
 export interface PostRepository {

@@ -5,6 +5,8 @@ export interface IConfig {
   jwt: string;
   rabbitmq: string;
   post_port: number;
+  user_port: number;
+  usersServiceUrl: string;
   db: {
     host: string;
     port: number;
@@ -18,6 +20,8 @@ export const config: IConfig = {
   jwt: process.env.JWT_SECRET || "your-super-secret-key",
   rabbitmq: process.env.RABBITMQ_URL || "amqp://localhost",
   post_port: Number(process.env.POST_PORT) || 3002,
+  user_port: Number(process.env.USER_PORT) || 3001,
+  usersServiceUrl: `http://user-service:${process.env.USER_PORT || 3001}`,
   db: {
     host: process.env.POST_DB_HOST || "localhost",
     port: Number(process.env.POST_DB_PORT) || 5432,

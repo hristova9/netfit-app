@@ -9,11 +9,6 @@ export const postValidationSchema: JSONSchemaType<IPost> = {
     photo: { type: "string", nullable: true },
     createdAt: { type: "string", format: "date-time" },
     ownerId: { type: "string", format: "uuid" },
-    ownerFirstName: { type: "string", minLength: 2 },
-    ownerLastName: { type: "string", minLength: 2 },
-    ownerAvatar: { type: "string", nullable: true },
-    likesCount: {type: "number", nullable: true},
-    hasLiked: {type: "boolean", nullable: true}
   },
   additionalProperties: false,
   required: [
@@ -21,7 +16,5 @@ export const postValidationSchema: JSONSchemaType<IPost> = {
     "description",
     "createdAt",
     "ownerId",
-    "ownerFirstName",
-    "ownerLastName",
   ],
 };

@@ -7,10 +7,18 @@ import postRepository, {
 } from "../repositories/post.repository";
 import _ from "lodash";
 import { deleteLikesByPostId, getLikesCount, hasLiked } from "./like.service";
+import { getUserById, getUsersByIds } from "./user.service";
+import { IUser } from "../models/user.model";
 
 export const getAllPosts = async (loggedInUserId: string) => {
   try {
     const posts = await findAllPosts();
+
+    const ownerIds = [...new Set(posts.map((post) => post.ownerId))]; // unique IDs
+    const users = (await getUsersByIds(ownerIds)) as IUser[];
+
+    const usersMap = new Map(users.map((user) => [user.id, user]));
+
     const updatedPosts = await Promise.all(
       posts.map(async (post) => {
         const [likesCount, liked] = await Promise.all([
@@ -18,10 +26,21 @@ export const getAllPosts = async (loggedInUserId: string) => {
           hasLiked(post.id, loggedInUserId),
         ]);
 
-        return { ...post, likesCount, hasLiked: liked };
+        const user = usersMap.get(post.ownerId);
+        const owner = {
+          firstName: user?.firstName || "",
+          lastName: user?.lastName || "",
+          avatar: user?.avatar || null,
+        };
+
+        return {
+          ...post,
+          likesCount,
+          hasLiked: liked,
+          owner,
+        };
       })
     );
-
     return updatedPosts;
   } catch (error) {
     throw new Error("Database error: Unable to retrieve posts.");
@@ -37,7 +56,20 @@ export const getPostById = async (id: string, loggedInUserId: string) => {
     hasLiked(post.id, loggedInUserId),
   ]);
 
-  return { ...post, likesCount, hasLiked: liked };
+  const user = await getUserById(post.ownerId);
+
+  const owner = {
+    firstName: user?.firstName || "",
+    lastName: user?.lastName || "",
+    avatar: user?.avatar || null,
+  };
+
+  return {
+    ...post,
+    likesCount,
+    hasLiked: liked,
+    owner,
+  };
 };
 
 export const createPost = async (data: IPost): Promise<IPost> => {
@@ -56,7 +88,10 @@ export const updatePost = async (id: string, data: Partial<IPost>) => {
     throw new Error(`Post not found`);
   }
 
-  const updatedPost = Object.assign(post, _.omit(data, ["id", "createdAt", "likesCount", "hasLiked"]));
+  const updatedPost = Object.assign(
+    post,
+    _.omit(data, ["id", "createdAt", "likesCount", "hasLiked"])
+  );
 
   return await savePost(updatedPost);
 };
@@ -67,7 +102,7 @@ export const deletePostById = async (id: string) => {
   if (!post) {
     throw new Error(`Post not found`);
   }
-  
+
   await deleteLikesByPostId(id);
   return await deletePost(post);
 };

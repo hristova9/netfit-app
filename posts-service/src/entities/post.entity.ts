@@ -21,13 +21,4 @@ export class Post {
 
   @Column()
   ownerId: string;
-
-  @Column()
-  ownerFirstName: string;
-
-  @Column()
-  ownerLastName: string;
-
-  @Column({ nullable: true })
-  ownerAvatar?: string;
 }
