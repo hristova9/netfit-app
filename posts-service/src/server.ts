@@ -5,15 +5,16 @@ import { PostDataSource } from "./config/typeorm.config";
 import cors from "@koa/cors";
 import { config } from "./config/config";
 import postRouter from "./routes/postRoutes";
+import likeRouter from "./routes/likeRoutes";
 
 const app = new Koa();
 const router = new Router();
 
 const PORT = config.post_port;
 app.use(async (ctx, next) => {
-  console.log(`Incoming: ${ctx.method} ${ctx.url}`);
-  console.log(`Headers: ${JSON.stringify(ctx.request.headers)}`);
-  console.log(`Body: ${JSON.stringify(ctx.request.body)}`);
+  // console.log(`Incoming: ${ctx.method} ${ctx.url}`);
+  // console.log(`Headers: ${JSON.stringify(ctx.request.headers)}`);
+  // console.log(`Body: ${JSON.stringify(ctx.request.body)}`);
   await next();
 });
 app.use(
@@ -32,6 +33,7 @@ app.use(async (ctx: Context, next: Next) => {
 });
 app.use(router.routes()).use(router.allowedMethods());
 app.use(postRouter.routes()).use(postRouter.allowedMethods());
+app.use(likeRouter.routes()).use(likeRouter.allowedMethods());
 
 const startServer = async () => {
   try {

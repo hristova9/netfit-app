@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import "./PostListItem.styles.css";
-import { FaComment, FaPen, FaThumbsUp, FaTrash, FaUser } from "react-icons/fa";
+import { FaComment, FaPen, FaTrash, FaUser } from "react-icons/fa";
+import { FaThumbsUp as FaThumbsUpSolid } from "react-icons/fa6"; // filled
+import { FaRegThumbsUp as FaThumbsUpOutline } from "react-icons/fa6";
 import { Post } from "../../models/Post.model";
 import Button from "../Button/Button";
+import { usePostLike } from "../../hooks/usePostLike";
 
 interface PostListItemProps {
   post: Post;
@@ -19,16 +22,24 @@ export const PostListItem: React.FC<PostListItemProps> = ({
   onDelete,
   currentUserId,
 }) => {
-  const [likes, setLikes] = useState(0);
+  const [liked, setLiked] = useState(post.hasLiked);
+  const [likesCount, setLikesCount] = useState(post.likesCount || 0); // assuming `post.likes` is an array
+  const { handleLike, handleUnlike } = usePostLike();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [comments, setComments] = useState([]);
-  // console.log(currentUserId);
 
-  // Handler functions
-  const handleLike = () => {
-    setLikes(likes + 1);
+  
+  const toggleLike = async () => {
+    if (!post.id) return;
+    if (liked) {
+      await handleUnlike(post.id);
+      setLikesCount((count) => count - 1);
+    } else {
+      await handleLike(post.id);
+      setLikesCount((count) => count + 1);
+    }
+    setLiked(!liked);
   };
-
   //   const handleAddComment = (comment: string) => {
   //     setComments([...comments, comment]);
   //   };
@@ -66,9 +77,9 @@ export const PostListItem: React.FC<PostListItemProps> = ({
       </div>
       <div className="post-bottom-section">
       <div className="post-actions">
-        <button onClick={handleLike} className="like-button">
-          <FaThumbsUp />
-          {likes}
+        <button onClick={toggleLike} className="like-button">
+        {liked ? <FaThumbsUpSolid /> : <FaThumbsUpOutline />}
+          {likesCount}
         </button>
         <button className="comment-button">
           <FaComment />

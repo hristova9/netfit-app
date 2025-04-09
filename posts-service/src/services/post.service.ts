@@ -6,19 +6,38 @@ import postRepository, {
   deletePost,
 } from "../repositories/post.repository";
 import _ from "lodash";
+import { deleteLikesByPostId, getLikesCount, hasLiked } from "./like.service";
 
-export const getAllPosts = async () => {
+export const getAllPosts = async (loggedInUserId: string) => {
   try {
-    return await findAllPosts();
+    const posts = await findAllPosts();
+    const updatedPosts = await Promise.all(
+      posts.map(async (post) => {
+        const [likesCount, liked] = await Promise.all([
+          getLikesCount(post.id),
+          hasLiked(post.id, loggedInUserId),
+        ]);
+
+        return { ...post, likesCount, hasLiked: liked };
+      })
+    );
+
+    return updatedPosts;
   } catch (error) {
     throw new Error("Database error: Unable to retrieve posts.");
   }
 };
 
-export const getPostById = async (id: string) => {
+export const getPostById = async (id: string, loggedInUserId: string) => {
   const post = await findPostById(id);
   if (!post) throw new Error("Post not found");
-  return post;
+
+  const [likesCount, liked] = await Promise.all([
+    getLikesCount(post.id),
+    hasLiked(post.id, loggedInUserId),
+  ]);
+
+  return { ...post, likesCount, hasLiked: liked };
 };
 
 export const createPost = async (data: IPost): Promise<IPost> => {
@@ -27,26 +46,28 @@ export const createPost = async (data: IPost): Promise<IPost> => {
 };
 
 export const updatePost = async (id: string, data: Partial<IPost>) => {
-  const post = await getPostById(id);
+  if (!data || !data.ownerId) {
+    throw new Error("Invalid data or missing ownerId");
+  }
+
+  const post = await getPostById(id, data.ownerId);
 
   if (!post) {
     throw new Error(`Post not found`);
   }
 
-  const updatedPost = Object.assign(post, _.omit(data, ["id", "createdAt"]));
+  const updatedPost = Object.assign(post, _.omit(data, ["id", "createdAt", "likesCount", "hasLiked"]));
 
   return await savePost(updatedPost);
 };
 
 export const deletePostById = async (id: string) => {
-  console.log("Attempting to delete post with ID:", id);
-  
   const post = await findPostById(id);
+
   if (!post) {
-    console.error(`Post with ID ${id} not found`);
     throw new Error(`Post not found`);
   }
-
-  console.log("Deleting post:", post);
+  
+  await deleteLikesByPostId(id);
   return await deletePost(post);
 };

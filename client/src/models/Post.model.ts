@@ -7,4 +7,6 @@ export interface Post {
   ownerFirstName: string;
   ownerLastName: string;
   ownerAvatar?: string;
+  likesCount?: number;
+  hasLiked?: boolean;
 }

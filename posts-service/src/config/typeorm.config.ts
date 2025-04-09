@@ -2,6 +2,7 @@ import "reflect-metadata";
 import { DataSource } from "typeorm";
 import { config } from "./config";
 import { Post } from "../entities/post.entity";
+import { Like } from "../entities/like.entity";
 
 export const PostDataSource = new DataSource({
   type: "postgres",
@@ -12,5 +13,5 @@ export const PostDataSource = new DataSource({
   database: config.db.database,
   synchronize: true,
   logging: false,
-  entities: [Post],
+  entities: [Post, Like],
 });

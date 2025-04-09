@@ -13,6 +13,7 @@ const forwardRequest = async (
       headers: {
         "Content-Type": "application/json",
         cookie: ctx.headers.cookie || "",
+        "X-Logged-In-User-Id": ctx.state.user?.id || "",
       },
       credentials: "include",
     };

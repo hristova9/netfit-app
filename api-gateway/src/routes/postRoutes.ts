@@ -7,8 +7,14 @@ import handleError from "../utils/handleError";
 const postRoutes = new Router();
 
 // Get all posts
-postRoutes.get("/posts", async (ctx) => {
+postRoutes.get("/posts", authMiddleware, async (ctx) => {
   try {
+    const loggedInUser = ctx.state.user?.id; 
+    
+    if (!loggedInUser) {
+      ctx.throw(401, 'Unauthorized: No user found.');
+    }
+
     const response = await forwardRequest(
       `${config.postsServiceUrl}/posts`,
       "GET",
@@ -111,6 +117,45 @@ postRoutes.delete("/posts/:id", authMiddleware, async (ctx) => {
       ctx.status = 500;
       ctx.body = { message: "Failed to delete post" };
     }
+  } catch (error) {
+    handleError(ctx, error);
+  }
+});
+
+postRoutes.post("/posts/:postId/like", authMiddleware, async (ctx) => {
+  const { postId } = ctx.params;
+  const user = ctx.state.user;
+
+  try {
+    const response = await forwardRequest(
+      `${config.postsServiceUrl}/likes/${postId}`,
+      "POST",
+      ctx,
+      undefined
+      // { ownerId: user.id }
+    );
+    ctx.status = 201;
+    ctx.body = { message: "Post liked successfully", data: response };
+  } catch (error) {
+    handleError(ctx, error);
+  }
+});
+
+// Remove a like from a post
+postRoutes.delete("/posts/:postId/like", authMiddleware, async (ctx) => {
+  const { postId } = ctx.params;
+  const user = ctx.state.user;
+
+  try {
+    const response = await forwardRequest(
+      `${config.postsServiceUrl}/likes/${postId}`,
+      "DELETE",
+      ctx,
+      undefined
+      // { ownerId: user.id }
+    );
+    ctx.status = 204;
+    ctx.body = { message: "Post unliked successfully" };
   } catch (error) {
     handleError(ctx, error);
   }

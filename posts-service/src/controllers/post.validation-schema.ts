@@ -12,6 +12,8 @@ export const postValidationSchema: JSONSchemaType<IPost> = {
     ownerFirstName: { type: "string", minLength: 2 },
     ownerLastName: { type: "string", minLength: 2 },
     ownerAvatar: { type: "string", nullable: true },
+    likesCount: {type: "number", nullable: true},
+    hasLiked: {type: "boolean", nullable: true}
   },
   additionalProperties: false,
   required: [

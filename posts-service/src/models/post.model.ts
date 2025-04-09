@@ -7,6 +7,8 @@ export interface IPost {
   ownerFirstName: string;
   ownerLastName: string;
   ownerAvatar?: string;
+  likesCount?: number;
+  hasLiked?: boolean;
 }
 
 export interface PostRepository {
@@ -15,4 +17,11 @@ export interface PostRepository {
   create: (data: IPost) => Promise<IPost>;
   update: (id: string, data: Partial<IPost>) => Promise<void>;
   delete: (id: string) => Promise<void>;
+}
+
+
+export interface ILike{
+    id: string;
+    postId: string;
+    ownerId: string;
 }

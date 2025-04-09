@@ -13,11 +13,11 @@ export const postsApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ["Posts"], 
+  tagTypes: ["Posts"],
   endpoints: (builder) => ({
     getAllPosts: builder.query<Post[], void>({
       query: () => "posts",
-      providesTags: ["Posts"], 
+      providesTags: ["Posts"],
     }),
     getPostById: builder.query<Post, string>({
       query: (id) => `posts/${id}`,
@@ -37,14 +37,31 @@ export const postsApi = createApi({
         method: "PUT",
         body: post,
       }),
-      invalidatesTags: ["Posts"], 
+      invalidatesTags: ["Posts"],
     }),
     deletePost: builder.mutation<void, string>({
       query: (postId) => ({
         url: `posts/${postId}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Posts"], 
+      invalidatesTags: ["Posts"],
+    }),
+    likePost: builder.mutation<{ message: string }, string>({
+      query: (postId) => ({
+        url: `posts/${postId}/like`,
+        method: "POST",
+        credentials: "include",
+      }),
+      invalidatesTags: ["Posts"],
+    }),
+
+    unlikePost: builder.mutation<{ message: string }, string>({
+      query: (postId) => ({
+        url: `posts/${postId}/like`,
+        method: "DELETE",
+        credentials: "include",
+      }),
+      invalidatesTags: ["Posts"],
     }),
   }),
 });
@@ -55,4 +72,6 @@ export const {
   useCreatePostMutation,
   useEditPostMutation,
   useDeletePostMutation,
+  useLikePostMutation,
+  useUnlikePostMutation
 } = postsApi;

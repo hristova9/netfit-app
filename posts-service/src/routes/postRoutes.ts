@@ -15,7 +15,13 @@ export const postRouter = new Router({
 // Get all posts
 postRouter.get("/", async (ctx) => {
   try {
-    const posts = await getAllPosts();
+    const loggedInUserId = ctx.headers["x-logged-in-user-id"] as string;
+
+    if (!loggedInUserId) {
+      ctx.throw(401, "Unauthorized: No user found.");
+    }
+    
+    const posts = await getAllPosts(loggedInUserId);
     ctx.status = 200;
     ctx.body = posts;
   } catch (error) {
@@ -27,7 +33,12 @@ postRouter.get("/", async (ctx) => {
 postRouter.get("/:id", async (ctx) => {
   try {
     const { id } = ctx.params;
-    const post = await getPostById(id);
+    const loggedInUserId = ctx.headers["x-logged-in-user-id"] as string;
+
+    if (!loggedInUserId) {
+      ctx.throw(401, "Unauthorized: No user found.");
+    }
+    const post = await getPostById(id, loggedInUserId);
     ctx.body = post;
   } catch (error) {
     if (error instanceof Error) {
@@ -68,23 +79,21 @@ postRouter.put("/:id", async (ctx) => {
 
 // Delete a post
 postRouter.delete("/:id", async (ctx) => {
-    try {
-        const { id } = ctx.params;
-        console.log(`🔍 Received delete request for post ID: ${id}`);
-    
-        await deletePostById(id);
-        
-        ctx.status = 204; // No content
-        console.log("✅ Post deleted successfully");
-      } catch (error) {
-        console.error("❌ Error deleting post:", error);
-    
-        if (error instanceof Error) {
-          ctx.throw(404, error.message);
-        } else {
-          ctx.throw(500, "An error occurred while deleting the post.");
-        }
-      }
+  try {
+    const { id } = ctx.params;
+    await deletePostById(id);
+
+    ctx.status = 204; // No content
+    console.log("✅ Post deleted successfully");
+  } catch (error) {
+    console.error("❌ Error deleting post:", error);
+
+    if (error instanceof Error) {
+      ctx.throw(404, error.message);
+    } else {
+      ctx.throw(500, "An error occurred while deleting the post.");
+    }
+  }
 });
 
 export default postRouter;
