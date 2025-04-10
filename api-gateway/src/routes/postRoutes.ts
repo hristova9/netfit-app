@@ -161,4 +161,66 @@ postRoutes.delete("/posts/:postId/like", authMiddleware, async (ctx) => {
   }
 });
 
+// Get all comments for a post
+postRoutes.get("/posts/:postId/comments", async (ctx) => {
+  const { postId } = ctx.params;
+
+  try {
+    const response = await forwardRequest(
+      `${config.postsServiceUrl}/comments/${postId}`,
+      "GET",
+      ctx
+    );
+    ctx.status = 200;
+    ctx.body = response;
+  } catch (error) {
+    handleError(ctx, error);
+  }
+});
+
+// Add a comment to a post
+postRoutes.post("/posts/:postId/comments", authMiddleware, async (ctx) => {
+  const { postId } = ctx.params;
+  const user = ctx.state.user;
+  const { text } = ctx.request.body as {text: string};
+
+  if (!text) {
+    ctx.status = 400;
+    ctx.body = { message: "Comment text is required" };
+    return;
+  }
+
+  try {
+    const response = await forwardRequest(
+      `${config.postsServiceUrl}/comments/${postId}`,
+      "POST",
+      ctx,
+      { text, ownerId: user.id }
+    );
+    ctx.status = 201;
+    ctx.body = { message: "Comment added", data: response };
+  } catch (error) {
+    handleError(ctx, error);
+  }
+});
+
+// Delete a comment by its ID
+postRoutes.delete("/posts/comments/:commentId", authMiddleware, async (ctx) => {
+  const { commentId } = ctx.params;
+  const user = ctx.state.user;
+
+  try {
+    const response = await forwardRequest(
+      `${config.postsServiceUrl}/comments/${commentId}`,
+      "DELETE",
+      ctx,
+      undefined
+    );
+    ctx.status = 204;
+    ctx.body = { message: "Comment deleted" };
+  } catch (error) {
+    handleError(ctx, error);
+  }
+});
+
 export default postRoutes;

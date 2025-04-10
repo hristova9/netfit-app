@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Post } from "../../models/Post.model";
+import { Comment } from "../../models/Comments.model";
 
 const API_URL = "http://localhost:3000/";
 
@@ -13,7 +14,7 @@ export const postsApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ["Posts"],
+  tagTypes: ["Posts", "Comments"],
   endpoints: (builder) => ({
     getAllPosts: builder.query<Post[], void>({
       query: () => "posts",
@@ -54,12 +55,26 @@ export const postsApi = createApi({
       }),
       invalidatesTags: ["Posts"],
     }),
-
     unlikePost: builder.mutation<{ message: string }, string>({
       query: (postId) => ({
         url: `posts/${postId}/like`,
         method: "DELETE",
         credentials: "include",
+      }),
+      invalidatesTags: ["Posts"],
+    }),
+    addComment: builder.mutation<Comment, Partial<Comment>>({
+      query: ({ postId, text }) => ({
+        url: `/posts/${postId}/comments`,
+        method: "POST",
+        body: { text },
+      }),
+      invalidatesTags: ["Posts"],
+    }),
+    deleteComment: builder.mutation<void, string>({
+      query: (commentId: string) => ({
+        url: `/posts/comments/${commentId}`,
+        method: "DELETE",
       }),
       invalidatesTags: ["Posts"],
     }),
@@ -73,5 +88,7 @@ export const {
   useEditPostMutation,
   useDeletePostMutation,
   useLikePostMutation,
-  useUnlikePostMutation
+  useUnlikePostMutation,
+  useAddCommentMutation,
+  useDeleteCommentMutation,
 } = postsApi;

@@ -9,21 +9,23 @@ import _ from "lodash";
 import { deleteLikesByPostId, getLikesCount, hasLiked } from "./like.service";
 import { getUserById, getUsersByIds } from "./user.service";
 import { IUser } from "../models/user.model";
+import { deleteCommentsByPostId, getAllComments, getCommentsCount } from "./comment.service";
 
 export const getAllPosts = async (loggedInUserId: string) => {
   try {
     const posts = await findAllPosts();
 
-    const ownerIds = [...new Set(posts.map((post) => post.ownerId))]; // unique IDs
+    const ownerIds = [...new Set(posts.map((post) => post.ownerId))];
     const users = (await getUsersByIds(ownerIds)) as IUser[];
 
     const usersMap = new Map(users.map((user) => [user.id, user]));
 
     const updatedPosts = await Promise.all(
       posts.map(async (post) => {
-        const [likesCount, liked] = await Promise.all([
+        const [likesCount, liked, commentsCount] = await Promise.all([
           getLikesCount(post.id),
           hasLiked(post.id, loggedInUserId),
+          getCommentsCount(post.id),
         ]);
 
         const user = usersMap.get(post.ownerId);
@@ -33,11 +35,15 @@ export const getAllPosts = async (loggedInUserId: string) => {
           avatar: user?.avatar || null,
         };
 
+        const comments = await getAllComments(post.id);
+
         return {
           ...post,
           likesCount,
+          commentsCount,
           hasLiked: liked,
           owner,
+          comments: comments
         };
       })
     );
@@ -51,9 +57,10 @@ export const getPostById = async (id: string, loggedInUserId: string) => {
   const post = await findPostById(id);
   if (!post) throw new Error("Post not found");
 
-  const [likesCount, liked] = await Promise.all([
+  const [likesCount, liked, commentsCount] = await Promise.all([
     getLikesCount(post.id),
     hasLiked(post.id, loggedInUserId),
+    getCommentsCount(post.id),
   ]);
 
   const user = await getUserById(post.ownerId);
@@ -67,6 +74,7 @@ export const getPostById = async (id: string, loggedInUserId: string) => {
   return {
     ...post,
     likesCount,
+    commentsCount,
     hasLiked: liked,
     owner,
   };
@@ -104,5 +112,6 @@ export const deletePostById = async (id: string) => {
   }
 
   await deleteLikesByPostId(id);
+  await deleteCommentsByPostId(id);
   return await deletePost(post);
 };

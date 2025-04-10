@@ -1,3 +1,5 @@
+import { Comment } from "./Comments.model";
+
 export interface Post {
   id: string;
   description: string;
@@ -11,4 +13,6 @@ export interface Post {
   }
   likesCount?: number;
   hasLiked?: boolean;
+  commentsCount?: number;
+  comments?: Comment[];
 }

@@ -6,6 +6,7 @@ import cors from "@koa/cors";
 import { config } from "./config/config";
 import postRouter from "./routes/postRoutes";
 import likeRouter from "./routes/likeRoutes";
+import commentRouter from "./routes/commentRoutes";
 
 const app = new Koa();
 const router = new Router();
@@ -34,6 +35,7 @@ app.use(async (ctx: Context, next: Next) => {
 app.use(router.routes()).use(router.allowedMethods());
 app.use(postRouter.routes()).use(postRouter.allowedMethods());
 app.use(likeRouter.routes()).use(likeRouter.allowedMethods());
+app.use(commentRouter.routes()).use(commentRouter.allowedMethods());
 
 const startServer = async () => {
   try {

@@ -1,0 +1,58 @@
+.comment-list-item {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #e2e2e2;
+    border-radius: 12px;
+    padding: 12px;
+    margin-top: 8px;
+    position: relative;
+    background: #fff;
+  }
+  
+  .comment-owner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .comment-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .comment-avatar-icon {
+    font-size: 32px;
+    color: #aaa;
+  }
+  
+  .comment-meta {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .comment-name {
+    font-weight: 600;
+  }
+  
+  .comment-date {
+    font-size: 0.8rem;
+    color: #888;
+  }
+  
+  .comment-text {
+    margin: 8px 0;
+    line-height: 1.4;
+  }
+  
+  .delete-comment-button {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    color: #d33;
+    cursor: pointer;
+  }
+  

@@ -11,6 +11,7 @@ interface PostListProps {
 }
 
 export const PostList: React.FC<PostListProps> = ({ posts, onEdit, onDelete, currentUserId }) => {
+
   return (
     <div className="post-list-container">
       <ul className="post-list">
