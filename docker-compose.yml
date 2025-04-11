@@ -124,11 +124,50 @@ services:
       API_GATEWAY_PORT: ${API_GATEWAY_PORT}
     networks:
       - mynetwork
+    
+    chat_db:
+      image: postgres:17
+      container_name: chat_db
+      restart: always
+      environment:
+        POSTGRES_USER: ${CHAT_DB_USER}
+        POSTGRES_PASSWORD: ${CHAT_DB_PASS}
+        POSTGRES_DB: ${CHAT_DB_NAME}
+      ports:
+        - "5435:5432"
+      volumes:
+        - chat_db_data:/var/lib/postgresql/data
+      networks:
+        - mynetwork
+
+  chat-service:
+    build: ./chat-service
+    container_name: chat-service
+    restart: always
+    depends_on:
+      - chat_db
+      - rabbitmq
+      - redis
+    ports:
+      - "3003:3003"
+    env_file:
+      - .env
+    environment:
+      - REDIS_HOST=redis
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      - CHAT_DB_HOST=chat_db
+      - CHAT_DB_PORT=5432
+      - CHAT_DB_USER=${CHAT_DB_USER}
+      - CHAT_DB_PASS=${CHAT_DB_PASS}
+      - CHAT_DB_NAME=${CHAT_DB_NAME}
+    networks:
+      - mynetwork
 
 volumes:
   user_db_data:
   post_db_data:
   redis_data:
+  chat_db_data:
   
 networks:
   mynetwork:
