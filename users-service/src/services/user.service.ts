@@ -24,10 +24,6 @@ export const getUserByEmail = async (email: string) => {
 };
 
 export const createUser = async (data: IUserRegister): Promise<IUser> => {
-  if (await findUserByEmail(data.email)) {
-    throw new Error(`User with email ${data.email} already exists`);
-  }
-
   const hashedPassword = await bcryptjs.hash(data.password, 10);
   const newUser = userRepository.create({ ...data, password: hashedPassword });
   return await saveUser(newUser);

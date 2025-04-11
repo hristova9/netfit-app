@@ -13,6 +13,8 @@ import {
   addToBlacklist,
   isTokenBlacklisted,
 } from "../services/blacklist.service";
+import { findUserByEmail } from "../repositories/user.repository";
+import HttpError from "../models/HttpError.instance";
 
 const authRouter = new Router({
   prefix: "/auth",
@@ -24,6 +26,12 @@ authRouter.post(
   async (ctx) => {
     try {
       const body = ctx.request.body as IUserRegister;
+      const existingUser = await findUserByEmail(body.email);
+
+      if (existingUser) {
+        throw new HttpError(400, { email: body.email }, `User with email ${body.email} already exists!`);
+      }
+
       const newUser = await createUser(body);
 
       ctx.status = 201;
@@ -41,6 +49,8 @@ authRouter.post(
         ctx.throw(400, err.message);
         console.error(`Error during registration: ${err.message}`);
       } else {
+        console.log("in else");
+        
         console.error("Unexpected error occurred during registration:", err);
         ctx.throw(
           500,
@@ -80,7 +90,7 @@ authRouter.post("/login", validator(loginUserValidationSchema), async (ctx) => {
 
     ctx.status = 200;
     ctx.body = {
-      user: sanitizedUser
+      user: sanitizedUser,
     };
   } catch (err) {
     if (err instanceof Error) {

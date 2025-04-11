@@ -39,12 +39,12 @@ export const useUserLogin = () => {
         return false;
       }
     } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
+      if (error && typeof error === "object" && "status" in error && error.status === 401) {
+        const err = error as { status: number; data?: { message?: string } };
+        setError(err.data?.message || "Wrong email or password!");
       } else {
-        setError("Unknown error occured!");
+        setError("Something went wrong. Please try again.");
       }
-
       return false;
     }
   };

@@ -28,8 +28,17 @@ const forwardRequest = async (
     }
 
     if (!response.ok) {
-      const errorData = await response.json();
-      return errorData;
+      const contentType = response.headers.get("content-type");
+      let errorData;
+
+      if (contentType && contentType.includes("application/json")) {
+        errorData = await response.json();
+      } else {
+        const text = await response.text();
+        errorData = { message: text };
+      }
+    
+      throw new HttpError(response.status, errorData, errorData.message || "Request failed");
     }
 
     const setCookieHeader = response.headers.get("set-cookie");
@@ -40,7 +49,6 @@ const forwardRequest = async (
     return await response.json();
   } catch (error) {
     if (error instanceof HttpError) {
-      console.error("Forward request error:", error);
       throw error;
     } else {
       throw new HttpError(500, { message: "Internal Service Error" }, "");

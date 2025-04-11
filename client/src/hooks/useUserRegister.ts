@@ -6,11 +6,12 @@ import {
   arePasswordsMatching,
 } from "../utils/validation";
 import { UserRegistration } from "../models/User.model";
-import { createUser } from "../services/userService";
+import { useRegisterUserMutation } from "../store/users/usersApi";
 
 export const useUserRegistration = () => {
   const [error, setError] = useState<string>("");
   const navigate = useNavigate();
+  const [registerUserMutation] = useRegisterUserMutation();
 
   const registerUser = async (formData: UserRegistration) => {
     const { firstName, lastName, email, password, repassword } = formData;
@@ -45,23 +46,24 @@ export const useUserRegistration = () => {
     }
 
     try {
-      await createUser(
-        trimmedFirstName,
-        trimmedLastName,
-        trimmedEmail,
-        password
-      );
+      await registerUserMutation({
+        firstName: trimmedFirstName,
+        lastName: trimmedLastName,
+        email: trimmedEmail,
+        password,
+      }).unwrap(); 
+
       setError("");
       navigate("/login");
-      console.log(`${trimmedFirstName} ${trimmedLastName} created`);
-      return true;
 
+      return true;
     } catch (error) {
-      if(error instanceof Error){
-        setError("Failed to login user.");
-      } else(
-        setError("Unknown error occured!")
-      )
+      if (error && typeof error === "object" && "status" in error && error.status === 400) {
+        const err = error as { status: number; data?: { message?: string } };
+        setError(err.data?.message || "This email is already registered. Try logging in.");
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
       return false;
     }
   };

@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { User } from "../../models/User.model";
+import { User, UserRegistration } from "../../models/User.model";
 import { setLoggedInUser } from "./usersSlice";
 
 const API_URL = "http://localhost:3000/";
@@ -16,7 +16,7 @@ export const userApi = createApi({
   }),
   tagTypes: ["Auth"],
   endpoints: (builder) => ({
-    registerUser: builder.mutation<{ token: string }, Partial<User>>({
+    registerUser: builder.mutation<{ token: string }, Partial<UserRegistration>>({
       query: (user) => ({
         url: "auth/register",
         method: "POST",
