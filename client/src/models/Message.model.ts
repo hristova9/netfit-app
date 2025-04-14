@@ -1,8 +1,8 @@
 export interface Message {
-    id: string;
+    id?: string;
     conversationId: string;
     senderId: string;
-    sender: {
+    sender?: {
         firstName: string;
         lastName: string;
         avatar: string;

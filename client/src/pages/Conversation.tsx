@@ -1,26 +1,75 @@
-// pages/Conversation.tsx
-
-import React, { useState } from "react";
-import useConversation from "../hooks/useConversation"; // Assuming you have the custom hook
-import MessagesList from "../components/MessagesList/MessagesList"; // Import MessagesList
+import React, { useEffect, useState } from "react";
+import useConversation from "../hooks/useConversation";
+import MessagesList from "../components/MessagesList/MessagesList";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { FaUser } from "react-icons/fa";
 import "./Conversation.css";
+import { RxStomp } from "@stomp/rx-stomp";
+import { Message } from "../models/Message.model";
 
 const Conversation: React.FC = () => {
-  const { conversation, isLoading, error, sendMessage, isSending } =
-    useConversation();
   const loggedInUser = useSelector(
     (state: RootState) => state.users.loggedInUser
   );
-  const [newMessage, setNewMessage] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [newMessageText, setNewMessageText] = useState("");
+
+  const [rxStomp] = useState(new RxStomp());
+  const { conversation, isLoading, error, sendMessage } = useConversation({
+    rxStomp,
+    loggedInUserId: loggedInUser?.id,
+  });
+
+  useEffect(() => {
+    if (conversation?.messages) {
+      setMessages(conversation.messages);
+    }
+  }, [conversation]);
+
+  useEffect(() => {
+    const rxStompConfig = {
+      brokerURL: "ws://localhost:15674/ws",
+      connectHeaders: {
+        login: "guest",
+        passcode: "guest",
+      },
+      debug: (msg: any) => {
+        // console.log(new Date(), msg);
+      },
+      heartbeatIncoming: 0,
+      heartbeatOutgoing: 20000,
+      reconnectDelay: 200,
+    };
+
+    rxStomp.configure(rxStompConfig);
+    rxStomp.activate();
+
+    const senderTopic = `/topic/${loggedInUser?.id}`;
+
+    const senderSubscription = rxStomp
+      .watch(senderTopic)
+      .subscribe((message) => {
+        const messageBody = JSON.parse(message.body);
+        console.log("Received message from sender: ", messageBody);
+        setMessages((prevMessages) => [...prevMessages, messageBody]);
+      });
+
+    return () => {
+      senderSubscription.unsubscribe();
+      rxStomp.deactivate();
+    };
+  }, [loggedInUser]);
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim()) return;
-    await sendMessage(newMessage);
-    setNewMessage("");
+    if (!newMessageText.trim()) return;
+    const newMessageJSON = sendMessage(newMessageText);
+    if (newMessageJSON) {
+      const newMessage: Message = JSON.parse(newMessageJSON);
+      setMessages((prev) => [...prev, newMessage]);
+    }
+    setNewMessageText("");
   };
 
   if (isLoading) return <p>Loading conversation...</p>;
@@ -49,7 +98,7 @@ const Conversation: React.FC = () => {
         </div>
 
         <MessagesList
-          messages={conversation?.messages || []}
+          messages={messages.length ? messages : []}
           loggedInUserId={loggedInUser.id}
         />
 
@@ -58,14 +107,14 @@ const Conversation: React.FC = () => {
             type="text"
             className="message-input"
             placeholder="Type your message..."
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            disabled={isSending}
+            value={newMessageText}
+            onChange={(e) => setNewMessageText(e.target.value)}
+            // disabled={isSending}
           />
           <button
             type="submit"
             className="message-send-button"
-            disabled={isSending || !newMessage.trim()}
+            // disabled={isSending || !newMessage.trim()}
           >
             Send
           </button>

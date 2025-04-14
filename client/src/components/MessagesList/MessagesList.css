@@ -5,6 +5,7 @@
   /* max-height: 80vh; */
   height: 100%;
   padding: 10px;
+  overflow: auto;
 }
 
 .message-item {

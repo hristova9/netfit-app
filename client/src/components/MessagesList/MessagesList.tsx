@@ -16,7 +16,7 @@ const MessagesList: React.FC<MessagesListProps> = ({
     <ul className="messages-list">
       {messages.map((message) => {
         const isOwnMessage = message.senderId === loggedInUserId;
-        console.log(message, isOwnMessage);
+        // console.log(message, isOwnMessage);
 
         return (
           <li
@@ -28,7 +28,7 @@ const MessagesList: React.FC<MessagesListProps> = ({
             {/* <div className="message-container"> */}
             {!isOwnMessage && (
               <div className="participant-avatar-container-message">
-                {message.sender.avatar ? (
+                {message.sender?.avatar ? (
                   <img
                     src={message.sender.avatar}
                     alt="Avatar"

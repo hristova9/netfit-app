@@ -30,15 +30,20 @@ export const getMessagesForConversation = async (
 };
 
 export const sendMessage = async (
-  conversationId: string,
-  senderId: string,
-  text: string
+    senderId: string,
+    recipientId: string,
+    text: string,
+    conversationId: string,
 ): Promise<Message> => {
   const newMessage = messageRepository.create({
-    conversationId,
-    senderId,
-    text,
+      senderId,
+      recipientId,
+      text,
+      conversationId,
   });
+  console.log("in service: ", newMessage);
+  
 
   return await createMessage(newMessage);
+  
 };

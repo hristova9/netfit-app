@@ -1,28 +1,38 @@
-// hooks/useConversation.ts
 import { useGetConversationByIdQuery } from "../store/chats/conversationsApi";
 import { useParams } from "react-router-dom";
-import { useSendMessageMutation } from "../store/chats/messagesApi";
 
-const useConversation = () => {
+const useConversation = ({
+  rxStomp,
+  loggedInUserId,
+}: {
+  rxStomp: any;
+  loggedInUserId: string | undefined;
+}) => {
   const { id: conversationId } = useParams<{ id: string }>();
-  const { data: conversation, error, isLoading } = useGetConversationByIdQuery(conversationId!);
+  const {
+    data: conversation,
+    error,
+    isLoading,
+  } = useGetConversationByIdQuery(conversationId!);
 
-  const [sendMessageMutation, { isLoading: isSending }] = useSendMessageMutation();
-
-  const sendMessage = async (text: string) => {
-    console.log(text);
-    console.log(conversationId);
+  const recipientId = conversation?.user1Id === loggedInUserId ? conversation?.user2Id : conversation?.user1Id;
+  const sendMessage = (message: string) => {
+    if (!rxStomp || !conversationId) return;
+    const body = JSON.stringify({
+      senderId: loggedInUserId,
+      recipientId,
+      text: message,
+      conversationId,
+    });
+    console.log(body);
     
-    if (!conversationId) return;
-    try {
-      const response = await sendMessageMutation({
-        conversationId,
-        text
-      }).unwrap();
-      return response;
-    } catch (err) {
-      console.error("Failed to send message:", err);
-    }
+    rxStomp.publish({
+      destination: `/queue/messages`,
+      type: "message",
+      userId: loggedInUserId,
+      body,
+    });
+    return body;
   };
 
   return {
@@ -30,9 +40,8 @@ const useConversation = () => {
     isLoading,
     error,
     sendMessage,
-    isSending,
+    // isSending,
   };
 };
 
 export default useConversation;
-

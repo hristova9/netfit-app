@@ -4,10 +4,24 @@ services:
   rabbitmq:
     image: "rabbitmq:3-management"
     container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    configs:
+      - source: plugins
+        target: /etc/rabbitmq/enabled_plugins
     restart: always
     ports:
       - "5672:5672"
       - "15672:15672"
+      - "15674:15674"
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mynetwork
 
   redis:
     image: "redis:latest"
@@ -28,8 +42,8 @@ services:
     # depends_on:
       # - api-gateway
     volumes:
-      - ./client:/app  
-      - /app/node_modules 
+      - ./client:/app 
+      - /app/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
@@ -145,9 +159,12 @@ services:
     container_name: chat-service
     restart: always
     depends_on:
-      - chat_db
-      - rabbitmq
-      - redis
+      rabbitmq:
+        condition: service_healthy
+      chat_db:
+        condition: service_started
+      redis:
+        condition: service_started
     ports:
       - "3003:3003"
     env_file:
@@ -168,7 +185,12 @@ volumes:
   post_db_data:
   redis_data:
   chat_db_data:
+  node_modules:
   
 networks:
   mynetwork:
     driver: bridge
+
+configs:
+  plugins:
+    content: "[rabbitmq_management, rabbitmq_web_stomp]."

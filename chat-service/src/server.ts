@@ -6,6 +6,8 @@ import { ChatDataSource } from "./config/typeorm.config";
 import { config } from "./config/config";
 import conversationRouter from "./routes/conversationRoute";
 import messageRouter from "./routes/messageRoute";
+import { startMessageConsumer } from "./consumers/message.consumer";
+
 
 const app = new Koa();
 const router = new Router();
@@ -14,7 +16,7 @@ const PORT = config.port;
 
 app.use(
   cors({
-    origin: "http://localhost:3000", 
+    origin: "http://localhost:3000",
     credentials: true,
   })
 );
@@ -36,11 +38,15 @@ app.use(router.routes()).use(router.allowedMethods());
 app.use(conversationRouter.routes()).use(conversationRouter.allowedMethods());
 app.use(messageRouter.routes()).use(messageRouter.allowedMethods());
 
+
 const startServer = async () => {
   try {
     await ChatDataSource.initialize()
-      .then(() => console.log("✅ Chat Service Database Connected"))
-      .catch((err) => console.error("❌ Error connecting to Chat DB", err));
+    .then(() => console.log("✅ Chat Service Database Connected"))
+    .catch((err) => console.error("❌ Error connecting to Chat DB", err));
+    
+    await startMessageConsumer();
+    console.log("Consumer booted and listening to 'messages' queue");
 
     app.listen(PORT, "0.0.0.0", () =>
       console.log(`💬 Chat Service running on port ${PORT}`)
@@ -49,5 +55,4 @@ const startServer = async () => {
     console.error("❌ Error during Chat Server startup", err);
   }
 };
-
 startServer();

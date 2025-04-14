@@ -16,6 +16,9 @@ export class Message {
   @Column()
   senderId: string;
 
+  @Column()
+  recipientId: string;
+
   @Column("text")
   text: string;
 
