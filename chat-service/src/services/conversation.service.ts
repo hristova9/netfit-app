@@ -4,7 +4,9 @@ import conversationRepository, {
   createConversation,
   findConversationsByUserId,
   findConversationByUsers,
+  getConversationById,
 } from "../repositories/conversation.repository";
+import { getMessagesForConversation } from "./message.service";
 import { getUsersByIds } from "./user.service";
 
 export const getUserConversations = async (
@@ -33,6 +35,21 @@ export const getUserConversations = async (
     };
   });
 };
+
+export const getConversationWithMessages = async (conversationId: string) => {
+    const conversation = await getConversationById(conversationId);
+    if (!conversation) {
+      throw new Error("Conversation not found");
+    }
+
+    // const participant = conversation.user1Id === 
+  
+    const messages = await getMessagesForConversation(conversationId);
+    return {
+      ...conversation,
+      messages: messages,
+    };
+  };
 
 export const createNewConversation = async (
   user1Id: string,

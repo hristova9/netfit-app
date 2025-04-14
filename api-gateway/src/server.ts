@@ -5,6 +5,7 @@ import authRoutes from "./routes/authRoutes";
 import {config} from "./config/config";
 import cors from "@koa/cors";
 import postRoutes from "./routes/postRoutes";
+import chatRoutes from "./routes/chatRoutes";
 
 const app = new Koa();
 
@@ -25,6 +26,8 @@ app.use(postRoutes.routes());
 app.use(postRoutes.allowedMethods());
 app.use(authRoutes.routes());
 app.use(authRoutes.allowedMethods());
+app.use(chatRoutes.routes());
+app.use(chatRoutes.allowedMethods());
 
 const port = config.apiGatewayPort;
 app.listen(port, () => {

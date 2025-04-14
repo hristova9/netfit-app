@@ -5,6 +5,12 @@ import { Conversation } from "../entities/conversation.entity";
 const conversationRepository: Repository<Conversation> =
   ChatDataSource.getRepository(Conversation);
 
+export const getConversationById = async (
+  id: string
+): Promise<Conversation | null> => {
+  return await conversationRepository.findOne({ where: { id } });
+};
+
 export const findConversationByUsers = async (user1: string, user2: string) => {
   return await conversationRepository.findOne({
     where: [

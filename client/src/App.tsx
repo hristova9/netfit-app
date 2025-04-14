@@ -10,6 +10,8 @@ import Chats from "./pages/Chats";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute/PublicRoute";
 import { useGetMyselfQuery } from "./store/users/usersApi";
+import Conversation from "./pages/Conversation";
+// import Conversation from "./pages/Conversation";
 
 function App() {
   useGetMyselfQuery();
@@ -55,6 +57,14 @@ function App() {
             element={
               <MainLayout>
                 <Chats />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/chats/:id"
+            element={
+              <MainLayout>
+                <Conversation />
               </MainLayout>
             }
           />
