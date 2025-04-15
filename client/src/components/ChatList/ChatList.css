@@ -1,7 +1,11 @@
-.chat-list-container{
-width: 100%;
+.chat-list-container {
+  width: 100%;
 }
 
-.chat-list{
-width: 100%;
+.chat-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+  gap: 21px;
 }

@@ -75,6 +75,8 @@ conversationRouter.get("/:id", async (ctx) => {
 conversationRouter.post("/", async (ctx) => {
   try {
     const loggedInUserId = ctx.headers["x-logged-in-user-id"] as string;
+    console.log(loggedInUserId);
+    
     const { user2Id } = ctx.request.body as ConversationRequestBody;
 
     if (!loggedInUserId) {

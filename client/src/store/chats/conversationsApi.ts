@@ -19,11 +19,11 @@ export const conversationsApi = createApi({
       query: () => "conversations",
       providesTags: ["Conversations"],
     }),
-    startConversation: builder.mutation<Conversation, { user1Id: string; user2Id: string }>({
-      query: ({ user1Id, user2Id }) => ({
+    startConversation: builder.mutation<{ message: string; data: Conversation }, {user2Id: string }>({
+      query: ({ user2Id }) => ({
         url: "conversations",
         method: "POST",
-        body: { user1Id, user2Id },
+        body: { user2Id },
       }),
       invalidatesTags: ["Conversations"],
     }),

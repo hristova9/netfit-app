@@ -9,9 +9,13 @@ import { useDispatch } from "react-redux";
 import { setLoggedInUser, updateUserInList } from "../store/users/usersSlice";
 import UploadPhotoModal from "../components/UploadPhotoModal/UploadPhotoModal";
 import { useUploadPhoto } from "../hooks/useUploadPhoto";
+import Button from "../components/Button/Button";
+import { useCreateConversation } from "../hooks/useCreateConversation";
+import { useNavigate } from "react-router-dom";
 
 const Profile: React.FC = () => {
-  const { user, loading: isUserLoading, isOwnProfile } = useUserProfile();
+  const { user, loading: isUserLoading, isOwnProfile, refetch } = useUserProfile();
+  const { startConversation } = useCreateConversation();
 
   const { formData, handleChange, updateProfile } = useUserEdit(user);
   const { uploadPhoto } = useUploadPhoto();
@@ -19,6 +23,7 @@ const Profile: React.FC = () => {
   const [isModalPhotoOpen, setIsModalPhotoOpen] = useState(false);
   const [fileType, setFileType] = useState<"avatar" | "cover" | null>(null);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   if (isUserLoading) return <p>Loading...</p>;
   if (!user) return <p>No user data available.</p>;
@@ -33,6 +38,7 @@ const Profile: React.FC = () => {
       setIsModalOpen(false);
     }
   };
+  
 
   const openUploadModal = (type: "avatar" | "cover") => {
     setFileType(type);
@@ -42,6 +48,8 @@ const Profile: React.FC = () => {
   const handleFileUpload = async (file: File, fileType: "avatar" | "cover") => {
     if (!user || !isOwnProfile) return;
 
+  console.log(user);
+
     const success = await uploadPhoto(user, file, fileType);
 
     if (success) {
@@ -49,9 +57,19 @@ const Profile: React.FC = () => {
         ...user,
         [fileType]: success,
       };
-
-      dispatch(setLoggedInUser(updatedUser));
+      await refetch();
+      console.log(updatedUser);
+      
+      // dispatch(setLoggedInUser(updatedUser));
       setIsModalPhotoOpen(false);
+    }
+  };
+
+  const handleMessageButton = async () => {
+    const conversation = await startConversation(user.id);
+    if (conversation) {
+      console.log(conversation);
+      navigate(`/chats/${conversation.id}`);
     }
   };
 
@@ -72,10 +90,17 @@ const Profile: React.FC = () => {
       </div>
 
       <div className="profile-actions">
-        {isOwnProfile && (
+        {isOwnProfile ? (
           <button className="edit-profile" onClick={() => setIsModalOpen(true)}>
             <FaPen /> Edit
           </button>
+        ) : (
+          <Button
+            type="button"
+            title="Message"
+            onClick={handleMessageButton}
+            className="message-button"
+          />
         )}
       </div>
       <div className="profile-section">

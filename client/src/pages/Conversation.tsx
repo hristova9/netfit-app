@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import useConversation from "../hooks/useConversation";
 import MessagesList from "../components/MessagesList/MessagesList";
 import { useSelector } from "react-redux";
@@ -14,12 +14,15 @@ const Conversation: React.FC = () => {
   );
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessageText, setNewMessageText] = useState("");
+  //   const [typing, setTyping] = useState<boolean>(false);
 
   const [rxStomp] = useState(new RxStomp());
   const { conversation, isLoading, error, sendMessage } = useConversation({
     rxStomp,
     loggedInUserId: loggedInUser?.id,
   });
+
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (conversation?.messages) {
@@ -28,14 +31,15 @@ const Conversation: React.FC = () => {
   }, [conversation]);
 
   useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  useEffect(() => {
     const rxStompConfig = {
       brokerURL: "ws://localhost:15674/ws",
       connectHeaders: {
         login: "guest",
         passcode: "guest",
-      },
-      debug: (msg: any) => {
-        // console.log(new Date(), msg);
       },
       heartbeatIncoming: 0,
       heartbeatOutgoing: 20000,
@@ -53,6 +57,14 @@ const Conversation: React.FC = () => {
         const messageBody = JSON.parse(message.body);
         console.log("Received message from sender: ", messageBody);
         setMessages((prevMessages) => [...prevMessages, messageBody]);
+
+        // if (
+        //   messageBody.type === "typing" &&
+        //   messageBody.senderId !== loggedInUser?.id
+        // ) {
+        //   setTyping(true);
+        //   setTimeout(() => setTyping(false), 1500); // Hide typing after 1.5s
+        // }
       });
 
     return () => {
@@ -64,13 +76,43 @@ const Conversation: React.FC = () => {
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessageText.trim()) return;
-    const newMessageJSON = sendMessage(newMessageText);
-    if (newMessageJSON) {
-      const newMessage: Message = JSON.parse(newMessageJSON);
-      setMessages((prev) => [...prev, newMessage]);
+    const newMessage = await sendMessage(newMessageText, "text");
+    console.log(newMessage);
+
+    if (newMessage && newMessage.senderId && newMessage.recipientId) {
+      const messageToAdd: Message = {
+        senderId: newMessage.senderId,
+        recipientId: newMessage.recipientId,
+        text: newMessage.text,
+        conversationId: newMessage.conversationId,
+      };
+      setMessages((prev) => [...prev, messageToAdd]);
+      setNewMessageText("");
+    } else {
+      console.error("Invalid message format:", newMessage);
+      setNewMessageText("");
     }
-    setNewMessageText("");
   };
+
+  //   let typingTimeout: NodeJS.Timeout;
+
+  //   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //     setNewMessageText(e.target.value);
+
+  //     if (!typing) {
+  //       // Send "typing" event to the server
+  //       sendMessage("", "typing"); // Send a "typing" event without a message
+  //       setTyping(true);
+  //     }
+
+  //     // Clear the typing indicator after 1.5 seconds of inactivity
+  //     clearTimeout(typingTimeout);
+  //     typingTimeout = setTimeout(() => {
+  //       setTyping(false);
+  //       sendMessage("", "text"); // You could send a "stop typing" event if necessary
+  //     }, 1500);
+  //     // setNewMessageText("");
+  //   };
 
   if (isLoading) return <p>Loading conversation...</p>;
   if (error) return <p>Error: {(error as Error).message}</p>;
@@ -101,7 +143,7 @@ const Conversation: React.FC = () => {
           messages={messages.length ? messages : []}
           loggedInUserId={loggedInUser.id}
         />
-
+        <div ref={messagesEndRef} />
         <form className="message-input-form" onSubmit={handleSend}>
           <input
             type="text"

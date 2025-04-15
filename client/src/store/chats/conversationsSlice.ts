@@ -3,12 +3,14 @@ import { Conversation } from "../../models/Conversation.model";
 
 interface ConversationState {
   conversations: Conversation[];
+  currentConversation: Conversation | null;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: ConversationState = {
   conversations: [],
+  currentConversation: null,
   loading: false,
   error: null,
 };
@@ -20,6 +22,9 @@ const conversationSlice = createSlice({
     setConversations: (state, action: PayloadAction<Conversation[]>) => {
       state.conversations = action.payload;
       state.error = null;
+    },
+    setCurrentConversation: (state, action: PayloadAction<Conversation>) => {
+      state.currentConversation = action.payload;
     },
     addConversation: (state, action: PayloadAction<Conversation>) => {
       state.conversations.unshift(action.payload);
@@ -39,6 +44,7 @@ const conversationSlice = createSlice({
 
 export const {
   setConversations,
+  setCurrentConversation,
   addConversation,
   setConversationLoading,
   setConversationError,

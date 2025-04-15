@@ -7,6 +7,7 @@ export interface Message {
         lastName: string;
         avatar: string;
     }
+    recipientId: string;
     text: string;
-    createdAt: string;
+    createdAt?: string;
 }

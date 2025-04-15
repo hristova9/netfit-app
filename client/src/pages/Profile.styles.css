@@ -22,6 +22,7 @@
   height: 50px;
   display: flex;
   justify-content: end;
+  z-index: 1001;
 }
 
 .edit-profile,
@@ -72,4 +73,8 @@
 .feed-section {
   margin-top: 20px;
   padding: 0 20px;
+}
+
+.message-button{
+  z-index: 10001;
 }

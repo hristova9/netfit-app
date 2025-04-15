@@ -8,16 +8,25 @@ interface ChatListProps {
   onConversationClick: (id: string) => void;
 }
 
-const ChatList: React.FC<ChatListProps> = ({ conversations, onConversationClick }) => {
+const ChatList: React.FC<ChatListProps> = ({
+  conversations,
+  onConversationClick,
+}) => {
   return (
     <div className="chat-list-container">
-      {conversations.length > 0 ? (
-        conversations.map((conversation) => <ul className="chat-list">
-            <ChatListItem key={conversation.id} conversation={conversation} onConversationClick={onConversationClick}/>
-        </ul> )
-      ) : (
-        <p>No conversations found</p>
-      )}
+      <ul className="chat-list">
+        {conversations.length > 0 ? (
+          conversations.map((conversation) => (
+            <ChatListItem
+              key={conversation.id}
+              conversation={conversation}
+              onConversationClick={onConversationClick}
+            />
+          ))
+        ) : (
+          <p>No conversations found</p>
+        )}
+      </ul>
     </div>
   );
 };

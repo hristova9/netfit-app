@@ -19,20 +19,9 @@ export const messagesApi = createApi({
       query: (conversationId) => `messages/${conversationId}`,
       providesTags: (_result, _err, id) => [{ type: "Messages", id }],
     }),
-    sendMessage: builder.mutation<Message, { conversationId: string; text: string }>({
-      query: ({ conversationId, text }) => ({
-        url: `messages/${conversationId}`,
-        method: "POST",
-        body: { text },
-      }),
-      invalidatesTags: (_result, _err, { conversationId }) => [
-        { type: "Messages", id: conversationId },
-      ],
-    }),
   }),
 });
 
 export const {
   useGetMessagesByConversationIdQuery,
-  useSendMessageMutation,
 } = messagesApi;

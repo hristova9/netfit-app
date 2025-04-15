@@ -70,3 +70,15 @@ button:hover {
   background-color: var(--color-secondary);
   color: var(--color-primary);
 }
+
+.message-button{
+  width: 100px;
+  margin-top: 20px;
+  background-color: var(--color-primary);
+  color: var(--color-secondary);
+}
+
+.message-button:hover{
+  background-color: var(--color-secondary);
+  color: var(--color-primary);
+}

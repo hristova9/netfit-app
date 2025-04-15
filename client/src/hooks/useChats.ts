@@ -1,40 +1,3 @@
-// import { useGetConversationsQuery, useStartConversationMutation } from "../store/chats/conversationsApi";
-// import { Conversation } from "../models/Conversation.model";
-
-// const useChats = () => {
-//   const {
-//     data: conversations = [],
-//     isLoading: loading,
-//     error,
-//     refetch,
-//   } = useGetConversationsQuery();
-
-//   const [startConversationMutation, { isLoading: creating, error: createError }] =
-//     useStartConversationMutation();
-
-//   const createConversation = async (user1Id: string, user2Id: string): Promise<Conversation | null> => {
-//     try {
-//       const conversation = await startConversationMutation({ user1Id, user2Id }).unwrap();
-//       return conversation;
-//     } catch (err) {
-//       console.error("Failed to create conversation", err);
-//       return null;
-//     }
-//   };
-
-//   return {
-//     conversations,
-//     loading,
-//     error,
-//     createConversation,
-//     creating,
-//     createError,
-//     refetch,
-//   };
-// };
-
-// export default useChats;
-
 import { useSelector, useDispatch } from "react-redux";
 import { useGetConversationsQuery } from "../store/chats/conversationsApi";
 import { setConversations } from "../store/chats/conversationsSlice";
@@ -47,7 +10,6 @@ const useGetConversations = () => {
     (state: RootState) => state.conversations.conversations
   );
 
-
   const {
     data: conversations,
     error,
@@ -57,7 +19,6 @@ const useGetConversations = () => {
     refetchOnMountOrArgChange: true,
   });
   console.log("conversations: ", conversations);
-  
 
   useEffect(() => {
     if (conversations && JSON.stringify(conversations) !== JSON.stringify(conversationsFromStore)) {

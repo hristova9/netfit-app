@@ -111,6 +111,8 @@ chatRoutes.post("/messages/:conversationId", authMiddleware, async (ctx) => {
 chatRoutes.post("/conversations", authMiddleware, async (ctx) => {
   const { user2Id } = ctx.request.body as SecondUser;
   const user = ctx.state.user;
+  console.log(user, user.id);
+  
 
   if (!user2Id) {
     ctx.status = 400;
@@ -123,7 +125,7 @@ chatRoutes.post("/conversations", authMiddleware, async (ctx) => {
       `${config.chatServiceUrl}/conversations`,
       "POST",
       ctx,
-      { user1Id: user.id, user2Id: user2Id }
+      {user2Id: user2Id }
     );
     ctx.status = 201;
     ctx.body = { message: "Conversation created", data: response };
