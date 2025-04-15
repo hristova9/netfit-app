@@ -1,3 +1,23 @@
+/* === CSS RESET === */
+/* * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  border: none;
+  outline: none;
+}
+
+body, html {
+  height: 100%;
+  font-family: sans-serif;
+  background: white;
+  color: black;
+  scroll-behavior: smooth;
+} */
+
+/* Remove default button/input styles */
+
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -26,6 +46,23 @@ html, body {
   font-family: sans-serif;
   background-color: var(--color-background);
   color: var(--color-text);
+  scroll-behavior: smooth;
+}
+
+button,
+input,
+textarea,
+select {
+  background: none;
+  color: inherit;
+  font: inherit;
+  border: none;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
 }
 
 ul, ol {
@@ -38,14 +75,7 @@ a {
 }
 
 button {
-  background: none;
-  border: none;
   cursor: pointer;
-}
-
-input, textarea, button {
-  font: inherit;
-  outline: none;
 }
 
 h1, h2, h3, h4, h5, h6, p {

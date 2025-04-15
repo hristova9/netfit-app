@@ -11,10 +11,18 @@
 }
 
 .modal-content {
+<<<<<<< Updated upstream
     width: 60vw;
     padding: 20px;
     border-radius: 30px;
     background-color: white;
+=======
+  margin-left: 250px;
+  width: 60vw;
+  padding: 20px;
+  border-radius: 30px;
+  background-color: white;
+>>>>>>> Stashed changes
 }
 
 .modal-form-photo {
@@ -94,8 +102,23 @@
 
 
 .modal-actions {
+<<<<<<< Updated upstream
     width: 80%;
     margin-top: 15px;
     display: flex;
     justify-content: space-between;
   }
+=======
+  width: 80%;
+  margin-top: 15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+@media (max-width: 768px) {
+  .modal-content {
+    margin-left: 50px;
+    width: 75vw;
+  }
+}
+>>>>>>> Stashed changes

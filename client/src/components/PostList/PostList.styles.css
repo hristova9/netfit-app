@@ -1,9 +1,15 @@
 .post-list-container{
     width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
 .post-list{
     display: flex;
+<<<<<<< Updated upstream
+=======
+    /* flex-flow: row wrap; */
+>>>>>>> Stashed changes
     flex-direction: column;
     justify-content: center;
     gap:20px;
