@@ -3,8 +3,9 @@ import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { useGetUserByIdQuery } from "../store/users/usersApi";
 import { useDispatch } from "react-redux";
-import { setCurrentUser, setLoggedInUser } from "../store/users/usersSlice";
+import { setLoggedInUser } from "../store/users/usersSlice";
 import { useEffect } from "react";
+
 
 const useUserProfile = () => {
   const { pathname } = useLocation();
@@ -26,12 +27,6 @@ const useUserProfile = () => {
   });
   console.log(currentUser);
   
-  useEffect(() => {
-    if (!isMe && currentUser) {
-      dispatch(setCurrentUser(currentUser));
-    }
-  }, [currentUser, dispatch, isMe]);
-
   useEffect(() => {
     if (isMe && currentUser) {
       dispatch(setLoggedInUser(currentUser));

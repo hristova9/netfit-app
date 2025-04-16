@@ -109,7 +109,7 @@
 }
 
 .post-image-modal {
-  width: 100%;               
+  width: 100%;
   max-width: 420px;
   border-radius: 8px;
   object-fit: cover;
@@ -145,7 +145,8 @@
 }
 
 .post-image-preview-header {
-    width: 100%;
+  width: 100%;
+  max-width: 420px;
   display: flex;
   justify-content: space-between;
   align-items: center;

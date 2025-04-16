@@ -12,6 +12,7 @@
 
 .modal-content {
   margin-left: 250px;
+  margin-left: 250px;
   width: 60vw;
   padding: 20px;
   border-radius: 30px;
@@ -19,6 +20,7 @@
 }
 
 .modal-form-edit {
+  width: 100%;
   width: 100%;
   display: flex;
   flex-direction: column;
