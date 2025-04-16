@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Conversation } from "../../models/Conversation.model";
+import { Message } from "../../models/Message.model";
 
 interface ConversationState {
   conversations: Conversation[];
@@ -29,6 +30,21 @@ const conversationSlice = createSlice({
     addConversation: (state, action: PayloadAction<Conversation>) => {
       state.conversations.unshift(action.payload);
     },
+    addMessageToConversation: (state, action: PayloadAction<Message>) => {
+      const currentConversation = state.currentConversation;
+      if (currentConversation) {
+        currentConversation.messages = currentConversation.messages || [];
+        currentConversation.messages.push(action.payload);
+      } else {
+        const conversation = state.conversations.find(
+          (conv) => conv.id === action.payload.conversationId
+        );
+        if (conversation) {
+          conversation.messages = conversation.messages || [];
+          conversation.messages.push(action.payload);
+        }
+      }
+    },
     setConversationLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
     },
@@ -46,6 +62,7 @@ export const {
   setConversations,
   setCurrentConversation,
   addConversation,
+  addMessageToConversation,
   setConversationLoading,
   setConversationError,
   clearConversations,

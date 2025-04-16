@@ -7,32 +7,33 @@ import { FaUser } from "react-icons/fa";
 import "./Conversation.css";
 import { RxStomp } from "@stomp/rx-stomp";
 import { Message } from "../models/Message.model";
+import { useDispatch } from "react-redux";
+import { addMessageToConversation } from "../store/chats/conversationsSlice";
 
 const Conversation: React.FC = () => {
   const loggedInUser = useSelector(
     (state: RootState) => state.users.loggedInUser
   );
-  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessageText, setNewMessageText] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
   //   const [typing, setTyping] = useState<boolean>(false);
 
   const [rxStomp] = useState(new RxStomp());
-  const { conversation, isLoading, error, sendMessage } = useConversation({
-    rxStomp,
-    loggedInUserId: loggedInUser?.id,
-  });
+  const { conversation, isLoading, error, sendMessage, refetch } =
+    useConversation({
+      rxStomp,
+      loggedInUserId: loggedInUser?.id,
+    });
+  const dispatch = useDispatch();
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (conversation?.messages) {
-      setMessages(conversation.messages);
-    }
-  }, [conversation]);
+    if (!conversation) return;
+    setMessages(conversation.messages || []);
 
-  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [conversation]);
 
   useEffect(() => {
     const rxStompConfig = {
@@ -57,6 +58,8 @@ const Conversation: React.FC = () => {
         const messageBody = JSON.parse(message.body);
         console.log("Received message from sender: ", messageBody);
         setMessages((prevMessages) => [...prevMessages, messageBody]);
+        dispatch(addMessageToConversation(messageBody));
+        refetch();
 
         // if (
         //   messageBody.type === "typing" &&
@@ -76,7 +79,7 @@ const Conversation: React.FC = () => {
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessageText.trim()) return;
-    const newMessage = await sendMessage(newMessageText, "text");
+    const newMessage = await sendMessage?.(newMessageText, "text");
     console.log(newMessage);
 
     if (newMessage && newMessage.senderId && newMessage.recipientId) {
@@ -86,8 +89,10 @@ const Conversation: React.FC = () => {
         text: newMessage.text,
         conversationId: newMessage.conversationId,
       };
+      dispatch(addMessageToConversation(messageToAdd));
       setMessages((prev) => [...prev, messageToAdd]);
       setNewMessageText("");
+        refetch();
     } else {
       console.error("Invalid message format:", newMessage);
       setNewMessageText("");

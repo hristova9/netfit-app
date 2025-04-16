@@ -21,12 +21,7 @@ import { usePostDelete } from "../hooks/usePostDelete";
 import PostModal from "../components/PostModal/PostModal";
 
 const Profile: React.FC = () => {
-  const {
-    user,
-    loading: isUserLoading,
-    isOwnProfile,
-    refetch,
-  } = useUserProfile();
+  const { user, loading: isUserLoading, isOwnProfile } = useUserProfile();
   const { startConversation } = useCreateConversation();
   const { formData, handleChange, updateProfile } = useUserEdit(user);
   const { posts } = useGetPostsByUser(user?.id || "");
@@ -84,7 +79,7 @@ const Profile: React.FC = () => {
         ...user,
         [fileType]: success,
       };
-      await refetch();
+      // await refetch();
       console.log(updatedUser);
       // dispatch(setLoggedInUser(updatedUser));
       setIsModalPhotoOpen(false);

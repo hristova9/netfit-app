@@ -1,6 +1,6 @@
-import React from "react";
-import { Message } from "../../models/Message.model"; 
-import { FaUser } from "react-icons/fa"; 
+import React, { useEffect, useRef } from "react";
+import { Message } from "../../models/Message.model";
+import { FaUser } from "react-icons/fa";
 import "./MessagesList.css";
 
 interface MessagesListProps {
@@ -12,8 +12,16 @@ const MessagesList: React.FC<MessagesListProps> = ({
   messages,
   loggedInUserId,
 }) => {
+  const messagesListRef = useRef<HTMLUListElement | null>(null);
+
+  useEffect(() => {
+    const container = messagesListRef.current;
+  if (container) {
+    container.scrollTop = container.scrollHeight;
+  }
+  }, [messages]);
   return (
-    <ul className="messages-list">
+    <ul className="messages-list" ref={messagesListRef}>
       {messages.map((message) => {
         const isOwnMessage = message.senderId === loggedInUserId;
 
@@ -49,6 +57,7 @@ const MessagesList: React.FC<MessagesListProps> = ({
           </li>
         );
       })}
+      {/* <div ref={messagesEndRef} /> */}
     </ul>
   );
 };
