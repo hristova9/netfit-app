@@ -16,7 +16,7 @@ button:hover {
   background-color: var(--color-primary);
   color: var(--color-background);
   margin-top: 30px;
-  width: 80%;
+  width: 100%;
 }
 
 .auth-button:hover {

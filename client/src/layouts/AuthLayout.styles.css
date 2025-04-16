@@ -43,7 +43,7 @@
   justify-content: center;
   align-items: center;
   gap: 10px;
-  width: 100%;
+  width: 80%;
 }
 
 .auth-form {
@@ -80,7 +80,8 @@
   overflow-wrap: break-word;
   overflow: hidden;
   white-space: pre-wrap;
-  width: 80%;
+  width: 100%;
+  text-align: left;
 }
 
 @media (max-width: 768px) {

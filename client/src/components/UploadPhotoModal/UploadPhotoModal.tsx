@@ -53,7 +53,7 @@ const UploadPhotoModal: React.FC<UploadPhotoModalProps> = ({
           <h2>Upload {fileType === "avatar" ? "Avatar" : "Cover Photo"}</h2>
           <input type="file" accept="image/*" onChange={handleFileChange} />
           {previewUrl && (
-            <div className="image-preview">
+            <div className={`image-preview ${fileType === "avatar" ? "avatar-wrapper" : "cover-wrapper"}`}>
               <img
                 src={previewUrl}
                 alt="Preview"

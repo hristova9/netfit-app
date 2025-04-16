@@ -90,7 +90,7 @@ const PostModal: React.FC<PostModalProps> = ({
                         <FaXmark />
                     </button>
                 </div>
-                <img src={previewUrl} alt="Preview" className="post-image" />
+                <img src={previewUrl} alt="Preview" className="post-image-modal" />
               </div>
             )}
           </div>

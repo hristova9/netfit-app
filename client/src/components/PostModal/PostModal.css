@@ -8,7 +8,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999; 
+  z-index: 999;
 }
 
 .modal-content {
@@ -31,13 +31,18 @@
 }
 
 .modal-form {
-  width: 100%;
+  width: 80%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
   align-content: space-between;
   gap: 30px;
+  overflow-y: auto;
+}
+
+.modal-form::-webkit-scrollbar {
+  display: none;
 }
 
 .modal-input-fields {
@@ -50,7 +55,7 @@
 }
 
 .modal-actions {
-  width: 80%;
+  width: 100%;
   margin-top: 15px;
   display: flex;
   justify-content: space-between;
@@ -61,7 +66,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 80%;
+  width: 100%;
 }
 
 .post-image-input {
@@ -96,16 +101,20 @@
 }
 
 .post-image-preview {
-  width: 80%;
-  text-align: center;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
 
 .post-image-modal {
-  width: 100%;
-  max-height: 300px;
-  border-radius: 6px;
+  width: 100%;               
+  max-width: 420px;
+  border-radius: 8px;
   object-fit: cover;
-  border: 2px solid #eee;
+  aspect-ratio: 1 / 1;
+  display: block;
 }
 
 .post-file-name {
@@ -136,7 +145,14 @@
 }
 
 .post-image-preview-header {
+    width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+@media (max-width: 768px) {
+  .modal-form {
+    width: 100%;
+  }
 }

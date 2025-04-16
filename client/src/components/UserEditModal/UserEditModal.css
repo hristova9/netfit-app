@@ -11,6 +11,7 @@
 }
 
 .modal-content {
+  margin-left: 250px;
   width: 60vw;
   padding: 20px;
   border-radius: 30px;
@@ -18,6 +19,7 @@
 }
 
 .modal-form-edit {
+  width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -34,10 +36,22 @@
   align-items: center;
 }
 
+
 .modal-actions {
   width: 80%;
   margin-top: 15px;
   display: flex;
   justify-content: space-between;
   gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .modal-content {
+    margin-left: 50px;
+    width: 75vw;
+  }
+
+  .modal-input-fields .input-field {
+    width: 100%;
+  }
 }

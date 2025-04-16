@@ -1,7 +1,7 @@
 .input-field{
     display: flex;
     flex-flow: column wrap;
-    width: 80%;
+    width: 100%;
 }
 
 label {

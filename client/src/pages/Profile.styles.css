@@ -22,12 +22,12 @@
   height: 50px;
   display: flex;
   justify-content: end;
-  z-index: 1001;
 }
 
 .edit-profile,
 .delete-profile {
   color: var(--color-text);
+  z-index: 998;
 }
 
 .profile-section {
@@ -76,5 +76,5 @@
 }
 
 .message-button{
-  z-index: 10001;
+  z-index: 998;
 }
