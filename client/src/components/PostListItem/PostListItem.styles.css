@@ -145,7 +145,11 @@
   color: var(--color-warning-secondary);
 }
 
-/* Mobile Responsiveness */
+.comments-lits{
+  overflow-y: auto;
+  max-height: 200px;
+}
+
 @media (max-width: 768px) {
   .post-list-item {
     max-width: 100%;

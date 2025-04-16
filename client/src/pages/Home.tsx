@@ -26,7 +26,7 @@ const Home: React.FC = () => {
   }>({
     description: "",
   });
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>("");
 
   const { createNewPost } = usePostCreate();
   const { editPost } = usePostEdit();
@@ -60,7 +60,7 @@ const Home: React.FC = () => {
 
     setModalMode("edit");
     setFormData({ description: post.description });
-    setPreviewUrl(post.photo || null);
+    setPreviewUrl(post?.photo || "");
     setEditingPost(post);
     setIsModalOpen(true);
   };
@@ -89,7 +89,7 @@ const Home: React.FC = () => {
       const success = await createNewPost(loggedInUser, formData);
       if (success) closeModal();
     } else if (modalMode === "edit" && editingPost) {
-      const success = await editPost(editingPost, formData);
+      const success = await editPost(previewUrl, editingPost, formData);
       if (success) closeModal();
     }
   };

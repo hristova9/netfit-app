@@ -46,6 +46,26 @@ postRoutes.get("/posts/:id", async (ctx) => {
   }
 });
 
+// Get all posts by a specific user
+postRoutes.get("/posts/user/:userId", authMiddleware, async (ctx) => {
+  const { userId } = ctx.params;
+  const loggedInUser = ctx.state.user;
+
+  try {
+    const response = await forwardRequest(
+      `${config.postsServiceUrl}/posts/user/${userId}`,
+      "GET",
+      ctx,
+      undefined
+    );
+    ctx.status = 200;
+    ctx.body = response;
+  } catch (error) {
+    handleError(ctx, error);
+  }
+});
+
+
 // Create a new post
 postRoutes.post("/posts", authMiddleware, async (ctx) => {
   const user = ctx.state.user;

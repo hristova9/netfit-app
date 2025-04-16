@@ -21,12 +21,10 @@ const useUserProfile = () => {
   const {
     data: currentUser,
     refetch,
-    isLoading
+    // isLoading
   } = useGetUserByIdQuery(id as string, {
     // skip: isMe,
   });
-  console.log(currentUser);
-  
   useEffect(() => {
     if (isMe && currentUser) {
       dispatch(setLoggedInUser(currentUser));

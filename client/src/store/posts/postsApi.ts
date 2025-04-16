@@ -24,6 +24,10 @@ export const postsApi = createApi({
       query: (id) => `posts/${id}`,
       providesTags: ["Posts"],
     }),
+    getPostsByUserId: builder.query<Post[], string>({
+      query: (userId) => `posts/user/${userId}`,
+      providesTags: ["Posts"],
+    }),
     createPost: builder.mutation<Post, Partial<Post>>({
       query: (post) => ({
         url: "posts",
@@ -84,6 +88,7 @@ export const postsApi = createApi({
 export const {
   useGetAllPostsQuery,
   useGetPostByIdQuery,
+  useGetPostsByUserIdQuery,
   useCreatePostMutation,
   useEditPostMutation,
   useDeletePostMutation,

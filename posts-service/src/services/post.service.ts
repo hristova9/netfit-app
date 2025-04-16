@@ -4,12 +4,17 @@ import postRepository, {
   findPostById,
   savePost,
   deletePost,
+  findPostsByOwnerId,
 } from "../repositories/post.repository";
 import _ from "lodash";
 import { deleteLikesByPostId, getLikesCount, hasLiked } from "./like.service";
 import { getUserById, getUsersByIds } from "./user.service";
 import { IUser } from "../models/user.model";
-import { deleteCommentsByPostId, getAllComments, getCommentsCount } from "./comment.service";
+import {
+  deleteCommentsByPostId,
+  getAllComments,
+  getCommentsCount,
+} from "./comment.service";
 
 export const getAllPosts = async (loggedInUserId: string) => {
   try {
@@ -43,7 +48,7 @@ export const getAllPosts = async (loggedInUserId: string) => {
           commentsCount,
           hasLiked: liked,
           owner,
-          comments: comments
+          comments: comments,
         };
       })
     );
@@ -78,6 +83,47 @@ export const getPostById = async (id: string, loggedInUserId: string) => {
     hasLiked: liked,
     owner,
   };
+};
+
+export const getPostsByUserId = async (
+  userId: string,
+  loggedInUserId: string
+) => {
+  try {
+    const posts = await findPostsByOwnerId(userId);
+
+    const user = await getUserById(userId);
+    const owner = {
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
+      avatar: user?.avatar || null,
+    };
+
+    const updatedPosts = await Promise.all(
+      posts.map(async (post) => {
+        const [likesCount, liked, commentsCount] = await Promise.all([
+          getLikesCount(post.id),
+          hasLiked(post.id, loggedInUserId),
+          getCommentsCount(post.id),
+        ]);
+
+        const comments = await getAllComments(post.id);
+
+        return {
+          ...post,
+          likesCount,
+          commentsCount,
+          hasLiked: liked,
+          owner,
+          comments,
+        };
+      })
+    );
+
+    return updatedPosts;
+  } catch (error) {
+    throw new Error("Database error: Unable to retrieve posts for this user.");
+  }
 };
 
 export const createPost = async (data: IPost): Promise<IPost> => {

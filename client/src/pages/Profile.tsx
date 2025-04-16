@@ -12,16 +12,46 @@ import { useUploadPhoto } from "../hooks/useUploadPhoto";
 import Button from "../components/Button/Button";
 import { useCreateConversation } from "../hooks/useCreateConversation";
 import { useNavigate } from "react-router-dom";
+import { PostList } from "../components/PostList/PostList";
+import useGetPostsByUser from "../hooks/useGetPostsByUser";
+import { Post } from "../models/Post.model";
+import { usePostCreate } from "../hooks/usePostCreate";
+import { usePostEdit } from "../hooks/usePostEdit";
+import { usePostDelete } from "../hooks/usePostDelete";
+import PostModal from "../components/PostModal/PostModal";
 
 const Profile: React.FC = () => {
-  const { user, loading: isUserLoading, isOwnProfile, refetch } = useUserProfile();
+  const {
+    user,
+    loading: isUserLoading,
+    isOwnProfile,
+    refetch,
+  } = useUserProfile();
   const { startConversation } = useCreateConversation();
-
   const { formData, handleChange, updateProfile } = useUserEdit(user);
+  const { posts } = useGetPostsByUser(user?.id || "");
   const { uploadPhoto } = useUploadPhoto();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalPhotoOpen, setIsModalPhotoOpen] = useState(false);
   const [fileType, setFileType] = useState<"avatar" | "cover" | null>(null);
+
+  const [modalModePost, setModalModePost] = useState<"create" | "edit">(
+    "create"
+  );
+  const [isModalOpenPost, setIsModalOpenPost] = useState(false);
+  const [editingPost, setEditingPost] = useState<Post | null>(null);
+  const [formDataPost, setFormDataPost] = useState<{
+    description: string;
+    photo?: File;
+  }>({
+    description: "",
+  });
+  const [previewUrlPost, setPreviewUrlPost] = useState<string>("");
+
+  const { createNewPost } = usePostCreate();
+  const { editPost } = usePostEdit();
+  const { deletePost } = usePostDelete();
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -38,7 +68,6 @@ const Profile: React.FC = () => {
       setIsModalOpen(false);
     }
   };
-  
 
   const openUploadModal = (type: "avatar" | "cover") => {
     setFileType(type);
@@ -47,8 +76,6 @@ const Profile: React.FC = () => {
 
   const handleFileUpload = async (file: File, fileType: "avatar" | "cover") => {
     if (!user || !isOwnProfile) return;
-
-  console.log(user);
 
     const success = await uploadPhoto(user, file, fileType);
 
@@ -59,7 +86,6 @@ const Profile: React.FC = () => {
       };
       await refetch();
       console.log(updatedUser);
-      
       // dispatch(setLoggedInUser(updatedUser));
       setIsModalPhotoOpen(false);
     }
@@ -68,8 +94,76 @@ const Profile: React.FC = () => {
   const handleMessageButton = async () => {
     const conversation = await startConversation(user.id);
     if (conversation) {
-      console.log(conversation);
       navigate(`/chats/${conversation.id}`);
+    }
+  };
+
+  const handleChangePost = (
+    updatedFields: Partial<{ description: string; photo?: File }>
+  ) => {
+    setFormDataPost((prev) => {
+      const newData = { ...prev, ...updatedFields };
+      if (updatedFields.photo instanceof File) {
+        setPreviewUrlPost(URL.createObjectURL(updatedFields.photo));
+      }
+      return newData;
+    });
+  };
+
+  // const openCreateModalPost = () => {
+  //   setModalModePost("create");
+  //   setFormDataPost({ description: "" });
+  //   setPreviewUrlPost("");
+  //   setEditingPost(null);
+  //   setIsModalOpenPost(true);
+  // };
+
+  const openEditModalPost = (post: Post) => {
+    if (user?.id !== post.ownerId) {
+      alert("You are not allowed to edit this post.");
+      return;
+    }
+
+    setModalModePost("edit");
+    setFormDataPost({ description: post.description });
+    setPreviewUrlPost(post?.photo || "");
+    setEditingPost(post);
+    setIsModalOpenPost(true);
+  };
+
+  const closeModalPost = () => {
+    setIsModalOpenPost(false);
+    setFormDataPost({ description: "" });
+    setPreviewUrlPost("");
+    setEditingPost(null);
+  };
+
+  const handleRemovePhotoPost = () => {
+    setFormDataPost((prevData) => ({
+      ...prevData,
+      photo: undefined,
+    }));
+
+    setPreviewUrlPost("");
+  };
+
+  const handleSubmitPost = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+
+    if (modalModePost === "create") {
+      const success = await createNewPost(user, formData);
+      if (success) closeModalPost();
+    } else if (modalModePost === "edit" && editingPost) {
+      const success = await editPost(previewUrlPost, editingPost, formData);
+      if (success) closeModalPost();
+    }
+  };
+
+  const handleDeletePost = async (postId: string) => {
+    const success = await deletePost(postId);
+    if (success) {
+      console.log("Post successfully deleted!");
     }
   };
 
@@ -124,6 +218,16 @@ const Profile: React.FC = () => {
         </h1>
         <p className="user-bio">{user.description}</p>
       </div>
+      {posts && posts.length > 0 ? (
+        <PostList
+          posts={posts}
+          onEdit={openEditModalPost}
+          onDelete={handleDeletePost}
+          currentUserId={user.id}
+        />
+      ) : (
+        <p>No posts yet!</p>
+      )}
       <UserEditModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -136,6 +240,16 @@ const Profile: React.FC = () => {
         fileType={fileType as "avatar" | "cover"}
         onClose={() => setIsModalPhotoOpen(false)}
         onUpload={handleFileUpload}
+      />
+      <PostModal
+        isOpen={isModalOpenPost}
+        mode={modalModePost}
+        onClose={closeModalPost}
+        onSubmit={handleSubmitPost}
+        onChange={handleChangePost}
+        postData={formDataPost}
+        previewUrl={previewUrlPost}
+        onRemovePhoto={handleRemovePhotoPost}
       />
     </div>
   );

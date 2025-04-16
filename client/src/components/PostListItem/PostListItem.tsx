@@ -110,7 +110,7 @@ export const PostListItem: React.FC<PostListItemProps> = ({
             />
           </form>
           {commentsVisible && (
-            <>
+            <ul className="comments-lits">
               {post.comments && post.comments.length > 0 ? (
                 post.comments.map((comment) => (
                   <CommentListItem
@@ -123,7 +123,7 @@ export const PostListItem: React.FC<PostListItemProps> = ({
               ) : (
                 <p>No comments yet! Please add a comment!</p>
               )}
-            </>
+            </ul>
           )}
         </div>
       </div>

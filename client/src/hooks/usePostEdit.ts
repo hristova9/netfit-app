@@ -9,15 +9,18 @@ interface EditPostFormData {
   photo?: File;
 }
 
-export const usePostEdit= () => {
+export const usePostEdit = () => {
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [updatePostMutation, { isLoading: isUpdating }] = useEditPostMutation();
 
-  const editPost = async (post: Post, formData: EditPostFormData) => {
-      const { description: rawDescription, photo } = formData;
-      const description = rawDescription.trim();
-
+  const editPost = async (
+    previewUrl: string,
+    post: Post,
+    formData: EditPostFormData
+  ) => {
+    const { description: rawDescription, photo } = formData;
+    const description = rawDescription.trim();
     if (!description) {
       setError("Description is required!");
       return false;
@@ -31,7 +34,7 @@ export const usePostEdit= () => {
 
       if (photo instanceof File) {
         const validationError = validateFile(photo);
-        
+
         if (validationError) {
           setError(validationError);
           return false;
@@ -60,7 +63,12 @@ export const usePostEdit= () => {
       const updatedPost: Post = {
         ...post,
         description,
-        photo: photoUrl ?? null,
+        photo:
+          photoUrl || previewUrl
+            ? photoUrl || previewUrl
+            : photo
+            ? post.photo
+            : null,
       };
       const result = await updatePostMutation(updatedPost).unwrap();
 

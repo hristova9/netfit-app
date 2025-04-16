@@ -5,6 +5,7 @@ import {
   getPostById,
   createPost,
   updatePost,
+  getPostsByUserId,
 } from "../services/post.service";
 import { IPost } from "../models/post.model";
 
@@ -20,7 +21,7 @@ postRouter.get("/", async (ctx) => {
     if (!loggedInUserId) {
       ctx.throw(401, "Unauthorized: No user found.");
     }
-    
+
     const posts = await getAllPosts(loggedInUserId);
     ctx.status = 200;
     ctx.body = posts;
@@ -46,6 +47,24 @@ postRouter.get("/:id", async (ctx) => {
     } else {
       ctx.throw(500, "An error occurred while retrieving the post.");
     }
+  }
+});
+
+// Get posts by specific user ID
+postRouter.get("/user/:userId", async (ctx) => {
+  try {
+    const { userId } = ctx.params;
+    const loggedInUserId = ctx.headers["x-logged-in-user-id"] as string;
+
+    if (!loggedInUserId) {
+      ctx.throw(401, "Unauthorized: No user found.");
+    }
+
+    const posts = await getPostsByUserId(userId, loggedInUserId);
+    ctx.status = 200;
+    ctx.body = posts;
+  } catch (error) {
+    ctx.throw(500, "An error occurred while retrieving posts for this user.");
   }
 });
 

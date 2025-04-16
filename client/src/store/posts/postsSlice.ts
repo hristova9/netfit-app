@@ -22,7 +22,7 @@ const postSlice = createSlice({
       state.error = null;
     },
     addPost: (state, action: PayloadAction<Post>) => {
-      state.posts.unshift(action.payload); // Add new post to the top
+      state.posts.unshift(action.payload); 
     },
     updatePost: (state, action: PayloadAction<Post>) => {
       state.posts = state.posts.map((post) =>
